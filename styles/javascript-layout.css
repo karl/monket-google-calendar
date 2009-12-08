@@ -1,0 +1,279 @@
+html, body, #calendar {
+	height: 100%;
+}
+
+body, table {
+	font-family: Tahoma, Verdana, Arial;
+}
+
+body {
+	font-size: 70%;
+/*	font-size: 11px;*/
+	background: #FFF1CF;
+	color: #444;
+}
+
+#image-for-gdata {
+	position:absolute; 
+	top: -1000px;
+}
+
+/* Templates won't be visible, but will still have sizes calculated */
+#templates, #layout-test {
+	width: 100%;
+	margin-left: -1000em;
+	margin-top: -1000em;
+}
+
+#header {
+	width: 100%;
+	margin: 0;
+	position: absolute;
+	top: 0;
+	opacity: 0.6;
+	z-index: 100;
+}
+
+#header td {
+	width: 14.2857%;
+	width: 10%; /* stops rendering error in Firefox */
+	border: none;
+	text-align: center;
+	padding: 0.1em 0.3em;
+}
+
+#body {
+	height: 100%;
+	overflow: hidden;
+	background: #fff;
+}
+
+.week {
+	width: 100%;
+	height: 16.6666%;
+	height: 20%;
+	margin: 0;
+	overflow: hidden;
+	border-top: 1px solid #f5f5f5;
+	position: relative;
+}
+/*
+.week:hover {
+	position: relative;
+	overflow: visible;
+	z-index: 10;
+	bo rder: 1px solid red;
+}
+*/
+.week > table {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+}
+
+.week .indicator {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 17px;
+	width: 40px;
+	background: red;
+	color: #fff;
+	opacity: 0.5;
+    -moz-border-radius-bottomright: 0.5em;
+ 	-webkit-border-bottom-right-radius: 0.5em;
+	padding: 0 3px;
+	font-size: 0.9em;
+	display: none;
+}
+
+.week.queued {
+	background: #f9f9f9;
+}
+
+.week.loading {
+	background: #f9f9f9;
+}
+
+.week.failed-loading .indicator {
+	display: block;
+}
+
+.week td {
+	width: 14.2857%;
+	width: 10%; /* stops rendering error in Firefox */
+	border: 1px solid #f5f5f5;
+	border-bottom: none;
+	vertical-align: top;
+	padding: 0;
+}
+
+
+.week td .day-label {
+	float: right;
+	padding: 0.1em 0.3em;
+	color: #ccc;
+}
+
+.week td .month-label, #current-month-label {
+	padding: 0.1em 0.3em;
+	color: #444;
+	overflow: hidden;
+}
+
+.week td.today {
+	background-color: #F9FAE6;
+}
+
+.week td.start-month {
+	background-image: url(../images/start-month-background.png);
+	background-repeat: repeat-y;
+	background-position: left top;
+}
+
+#current-month-label {
+	position: absolute;
+}
+
+#notification {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	-moz-border-radius: 0.5em;
+	-webkit-border-radius: 0.5em;
+	background: #888;
+	opacity: 0.80;
+	color: #fff;
+	font-weight: bold;
+	font-size: 2em;
+	text-align: center;
+	z-index: 1000;
+}
+
+#notification-text  {
+	padding: 0.5em;
+	line-height: 1.5em;
+}
+
+#loading {
+	position: absolute;
+	z-index: 1000;
+	top: 0;
+	width: 100%;
+}
+
+#loading-text {
+	margin: 0 auto;
+	background: #888;
+	opacity: 0.8;
+	color: #fff;
+	font-weight: bold;
+	margin: 0 auto;
+	padding: 0.5em;
+    -moz-border-radius-bottomleft: 0.5em;
+ 	-webkit-border-bottom-left-radius: 0.5em;
+    -moz-border-radius-bottomright: 0.5em;
+ 	-webkit-border-bottom-right-radius: 0.5em;
+	width: 10em;
+	text-align: center;
+}
+
+.hidden {
+	display: none;
+}
+
+.event {
+	position: absolute;
+}
+
+.event .inner {
+	margin: 1px 2px 0px 1px;
+	padding: 0 5px;
+	background: #888;
+	color: #fff;
+	overflow: hidden;
+}
+
+.event.start .inner {
+    -moz-border-radius-topleft: 7px;
+	-webkit-border-top-left-radius: 7px;
+    -moz-border-radius-bottomleft: 7px;
+ 	-webkit-border-bottom-left-radius: 7px;
+}
+
+.event.end .inner {
+    -moz-border-radius-topright: 7px;
+ 	-webkit-border-top-right-radius: 7px;
+    -moz-border-radius-bottomright: 7px;
+ 	-webkit-border-bottom-right-radius: 7px;
+}
+
+.event .text {
+	margin-top: -1px;
+	font-size: 12px;
+	line-height: 18px;
+	min-height: 18px;
+	text-shadow: #666 0px 0px 1px;
+}
+
+.event.multi-day .text {
+	height: 18px;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.event.tentative {
+	opacity: 0.5;	
+}
+
+/* TODO: Colours for events */
+.event.colour-0 .inner {
+	background: #AF5455;
+}
+
+.event.colour-1 .inner {
+	background: #5F7FC9;
+}
+
+.event.colour-2 .inner {
+	background: #659074;
+}
+
+.event.colour-3 .inner {
+	background: #E1A64D;
+}
+
+.event.colour-4 .inner {
+	background: #71A89F;
+}
+
+.event.colour-5 .inner {
+	background: #7762C2;
+}
+
+.event.colour-6 .inner {
+	background: #5A7697;
+}
+
+.event.colour-7 .inner {
+	background: #6F7D7A;
+}
+
+
+#login {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	-moz-border-radius: 0.5em;
+	-webkit-border-radius: 0.5em;
+	background: #888;
+	opacity: 0.90;
+	color: #fff;
+	font-weight: bold;
+	font-size: 2em;
+	text-align: center;
+	z-index: 1000;
+	width: 400px;
+	padding: 0.5em;
+}
+
