@@ -17,5 +17,5 @@ window.Login = function(user, scope) {
 	
 	me.doLogin = function() {
 		me.user.login(me.scope);		
-	}
-}
+	};
+};

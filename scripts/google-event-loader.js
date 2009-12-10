@@ -138,7 +138,7 @@ window.GoogleEventLoader = function(service, loading) {
 		}
 				
 		return entries;
-	}
+	};
 	
 	// me.datesInOfflineCache = function(startDate, endDate) {
 	// 	var cacheInfo = me.offlineCache[me.getCacheKey(startDate)];
@@ -193,7 +193,7 @@ window.GoogleEventLoader = function(service, loading) {
 
 
 				var event = {};
-				event.summary = entry.getTitle().getText();
+				event.summary = $.trim(entry.getTitle().getText());
 				event.calNumber = calNumber + 1;
 				event.start = entrystartDate;
 				event.end = entryendDate;
@@ -206,7 +206,7 @@ window.GoogleEventLoader = function(service, loading) {
 		    }
 
 			successCallback(results, startDate, endDate);
-		}
+		};
 		
 		var calendar = me.calendars[calNumber];
 		var uri = calendar.getLink().href;

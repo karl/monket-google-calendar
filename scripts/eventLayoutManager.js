@@ -19,14 +19,14 @@ function EventLayoutManager(config, eventLoader, colourMap) {
 		
 		me.recaculateConstants = true;
 		// TODO: recaculate constants on browser resize
-	}
+	};
 
 	// only recaculate constants if they need redefining (e.g. first layout or browser resize)
 	me.getConstants = function() {
 		if (me.recaculateConstants) {
 			me.calculateConstants();
 		}
-	}
+	};
 
 	// must be called after the frist week has been added to the DOM
 	me.calculateConstants = function() {
@@ -40,7 +40,7 @@ function EventLayoutManager(config, eventLoader, colourMap) {
 
 		// set width of test event to single day
 		$("#layout-event").width(me.dayWidth);
-	}
+	};
 	
 	// In order to lay out events we divide the week into a grid
 	// The columns of the grid represent each day
@@ -70,7 +70,7 @@ function EventLayoutManager(config, eventLoader, colourMap) {
 		//   if show-more count > 0
 		//     display 'X more' link 
 		
-	}
+	};
 	
 	me.placeEvent = function(event) {
 		// Build the DOM object for the event
@@ -107,7 +107,7 @@ function EventLayoutManager(config, eventLoader, colourMap) {
 			// increment show-more count for all days the event spans
 			$.log("No room to place event: " + event.summary);
 		}
-	}
+	};
 	
 	me.initLayoutGridForWeek = function(weekDate) {
 		// initialise layoutGrid array
@@ -119,7 +119,7 @@ function EventLayoutManager(config, eventLoader, colourMap) {
 				me.layoutGrid[i][index] = 0;
 			}
 		}
-	}
+	};
 	
 	me.prepareEvents = function(weekDate, events) {
 		
@@ -144,11 +144,11 @@ function EventLayoutManager(config, eventLoader, colourMap) {
 		preppedEvents.sort(me.eventSort);
 
 		return preppedEvents;
-	}
+	};
 	
 	me.getRequiredLines = function(event) {
 		return Math.ceil($("#layout-event .text").text(event.summary).outerHeight() / me.lineHeight);
-	}
+	};
 	
 	me.findLineForEvent = function(event) {
 		for (var i = 0; i <= (me.layoutGrid.length - event.requiredLines); i++ ) {
@@ -163,7 +163,7 @@ function EventLayoutManager(config, eventLoader, colourMap) {
 			}
 		}
 		return null;
-	}
+	};
 	
 	me.markLayoutSpaceAsUsed = function(event, startLine) {
 		for (var j = startLine; j < (startLine + event.requiredLines); j++) {
@@ -171,16 +171,16 @@ function EventLayoutManager(config, eventLoader, colourMap) {
 				me.layoutGrid[j][date] = 1;
 			}
 		}
-	}
+	};
 	
 	// order events by week length, then by text length
 	me.eventSort = function(eventA, eventB) {
 		if (eventB.weekLength == eventA.weekLength) {
 			return eventB.summary.length - eventA.summary.length;
 		} else {
-			return eventB.weekLength - eventA.weekLength
+			return eventB.weekLength - eventA.weekLength;
 		}
-	}
+	};
 	
 	me.constructor();
 }

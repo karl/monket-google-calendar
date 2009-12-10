@@ -40,7 +40,7 @@ function Calendar(config, eventLoader, notification, eventLayoutManager) {
 		}
 		
 		return startDate;
-	}
+	};
 
 	me.doScroll = function(event, delta) {
 		// Work out the start date of the new top week and scroll to it
@@ -85,11 +85,11 @@ function Calendar(config, eventLoader, notification, eventLayoutManager) {
 		}
 		
 		$("#body").scrollTo(me.topWeek, 200, {easing : 'easeOutQuad', onAfter : me.finishedScrolling });
-	}
+	};
 	
 	me.setURLHash = function() {
 		location.hash = me.topWeekStartDate.customFormat(me.config.dateFormat);
-	}
+	};
 	
 	me.finishedScrolling = function() {
 		clearTimeout(me.finishedScrollingTimeout);
@@ -103,7 +103,7 @@ function Calendar(config, eventLoader, notification, eventLayoutManager) {
 				me.scrollingStartTime = null; 
 			}, 1000);
 		}
-	}
+	};
 	
 	me.createWeekElementsAsRequired = function(date) {
 		// If the date is before the earliest first week
@@ -135,11 +135,11 @@ function Calendar(config, eventLoader, notification, eventLayoutManager) {
 				currentDate = currentDate.addWeeks(1);
 			}
 		}
-	}
+	};
 	
 	me.updateCurrentMonthLabel = function() {
 		$("#current-month-label").text(me.topWeekStartDate.customFormat("#MMMM#"));
-	}
+	};
 	
 	me.buildWeeks = function(startDate) {
 		startDate = me.getWeekStartDate(startDate);
@@ -153,12 +153,12 @@ function Calendar(config, eventLoader, notification, eventLayoutManager) {
 		
 		// Scroll to the start date
 		me.scrollToWeekStarting(startDate);
-	}
+	};
 	
 	me.highlightToday = function() {
 		today = $("#" + me.config.dayIdPrefix + new Date().customFormat(me.config.dateFormat));
 		me.highlightDay(today);
-	}
+	};
 	
 	me.highlightDay = function(day) {
 		$("#calendar .week td").removeClass("today");
@@ -167,7 +167,7 @@ function Calendar(config, eventLoader, notification, eventLayoutManager) {
 		if (day.length > 0) {
 			day.addClass("today");
 		}
-	}
+	};
 	
 	me.createWeek = function(weekStart) {
 		// Clone the week template and set it's id to it's start date
@@ -203,30 +203,30 @@ function Calendar(config, eventLoader, notification, eventLayoutManager) {
 		me.addWeekToUpdate(weekStart);
 		
 		return week;
-	}
+	};
 	
 	me.weekIdToDate = function(id) {
 		dateString = id.substring(me.config.weekIdPrefix.length);
 		return Date.parse(dateString);
-	}
+	};
 	
 	me.getWeekStartDate = function(date) {
 		while (date.getDay() != 1) {
 			date = date.addDays(-1);
 		}
 		return date;
-	}
+	};
 	
 	me.doUpdate = function() {
 		me.highlightToday();
 		// TODO: Update events from the server
-	}
+	};
 	
 	me.addWeekToUpdate = function(date) {
 		me.weeksToUpdate[me.weeksToUpdate.length] = date;
 
 		me.scheduleLoadData();
-	}
+	};
 	
 	me.scheduleLoadData = function() {
 		if (me.scrollingStartTime) {
@@ -236,7 +236,7 @@ function Calendar(config, eventLoader, notification, eventLayoutManager) {
 		if (me.loadDataTimeout == null && me.weeksToUpdate.length > 0) {
 			me.loadDataTimeout = setTimeout(me.loadData, 10);
 		}
-	}
+	};
 	
 	me.loadData = function() {
 		me.loadDataTimeout = null;
@@ -258,19 +258,19 @@ function Calendar(config, eventLoader, notification, eventLayoutManager) {
 		Array.remove(me.weeksToUpdate, nearestIndex);
 		
 		me.loadWeek(nearestDate);
-	}
+	};
 
 	me.loadWeek = function(startDate) {
 		$("#" + me.config.weekIdPrefix + startDate.customFormat(me.config.dateFormat))
 			.removeClass('queued')
 			.addClass("loading");
 		me.eventLoader.load(startDate, startDate.addDays(6), me.eventLoadCallback, me.eventLoadFailed);		
-	}
+	};
 
 	me.eventLoadFailed = function(startDate, endDate) {
 		$("#" + me.config.weekIdPrefix + date.customFormat(me.config.dateFormat)).addClass("failed-loading");
 		me.scheduleLoadData();
-	}
+	};
 	
 	me.eventLoadCallback = function(events, startDate, endDate) {
 		try {
@@ -283,7 +283,7 @@ function Calendar(config, eventLoader, notification, eventLayoutManager) {
 		}
 		
 		me.scheduleLoadData();
-	}
+	};
 
 	me.convertDates = function(events) {
 		$.each(events, function (i, event) {
@@ -292,7 +292,7 @@ function Calendar(config, eventLoader, notification, eventLayoutManager) {
 		});
 		
 		return events;
-	}
+	};
 		
 		
 	me.constructor();

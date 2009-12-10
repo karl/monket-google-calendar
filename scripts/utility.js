@@ -8,7 +8,7 @@ Date.parse = function(dateString) {
 	}
 	
 	return new Date(dateValues[0], dateValues[1] - 1, dateValues[2]);
-}
+};
 
 // Return a new date, equal to this date with a number of days added to it
 // numDays can be negative to subract days
@@ -17,13 +17,13 @@ Date.prototype.addDays = function(numDays) {
 	var days = date.getDate();
 	date.setDate(days + numDays);
 	return date;
-}
+};
 
 // Return a new date, equal to this date with a number of weeks added to it
 // numWeeks can be negative to subract days
 Date.prototype.addWeeks = function(numWeeks) {
 	return this.addDays(numWeeks * 7);
-}
+};
 
 // Format a date using a given format string
 // Copied from: http://phrogz.net/JS/Classes/ExtendingJavaScriptObjectsAndClasses.html#example2
@@ -38,14 +38,18 @@ Date.prototype.customFormat=function(formatString) {
    formatString = formatString.replace("#YYYY#",YYYY).replace("#YY#",YY).replace("#MMMM#",MMMM).replace("#MMM#",MMM).replace("#MM#",MM).replace("#M#",M).replace("#DDDD#",DDDD).replace("#DDD#",DDD).replace("#DD#",DD).replace("#D#",D).replace("#th#",th);
 
    h=(hhh=this.getHours());
-   if (h==0) h=24;
-   if (h>12) h-=12;
+   if (h === 0) {
+		h=24;
+	}
+   if (h>12) {
+		h-=12;
+	}
    hh = h<10?('0'+h):h;
    ampm=hhh<12?'am':'pm';
    mm=(m=this.getMinutes())<10?('0'+m):m;
    ss=(s=this.getSeconds())<10?('0'+s):s;
    return formatString.replace("#hhh#",hhh).replace("#hh#",hh).replace("#h#",h).replace("#mm#",mm).replace("#m#",m).replace("#ss#",ss).replace("#s#",s).replace("#ampm#",ampm);
-}
+};
 
 if (!String.prototype.endsWith) {
   String.prototype.endsWith = function(suffix) {
