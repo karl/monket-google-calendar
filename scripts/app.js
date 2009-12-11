@@ -18,7 +18,8 @@ google.setOnLoadCallback(function() {
 			
 			var colourMap = ColourMap;
 			var config = new MonketCalendarConfig();
-			var eventLayoutManager = new EventLayoutManager(config, googleEventLoader, colourMap);
+			var eventCreator = new EventCreator(googleEventLoader, colourMap);
+			var eventLayoutManager = new EventLayoutManager(config, eventCreator);
 			var calendar = new Calendar(config, googleEventLoader, notification, eventLayoutManager);
 			
 		}, function() {

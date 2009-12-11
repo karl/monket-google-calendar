@@ -1,5 +1,6 @@
 Bugs
 * Scrolling is too sensitive in Chrome
+* Does not work in Safari
 
 Enhancements
 * Faster loading

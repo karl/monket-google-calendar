@@ -1,10 +1,9 @@
 
 // Lays out events using javascript
-function EventLayoutManager(config, eventLoader, colourMap) {
+function EventLayoutManager(config, eventCreator) {
 	var me = this;
 	this.config = config;
-	this.eventLoader = eventLoader;
-	this.colourMap = colourMap;
+	this.eventCreator = eventCreator;
 
 	this.recaculateConstants;
 
@@ -73,28 +72,7 @@ function EventLayoutManager(config, eventLoader, colourMap) {
 	};
 	
 	me.placeEvent = function(event) {
-		// Build the DOM object for the event
-		var eventDOM = $("#templates .event").clone();
-
-		$(".text", eventDOM).text(event.summary);
-		if (event.length > 1) {
-			eventDOM.addClass("multi-day");
-		}
-		if (event.isStart) {
-			eventDOM.addClass('start');
-		}
-		if (event.isEnd) {
-			eventDOM.addClass('end');
-		}
-		
-		eventDOM.width((event.weekLength * 14.2857) + "%");			
-
-		var color = me.eventLoader.calendars[event.calNumber - 1].getColor().getValue();
-		$('.inner', eventDOM).css('background-color', me.colourMap[color]);
-
-		if (event.summary.endsWith('?')) {
-			eventDOM.addClass('tentative');
-		}
+		var eventDOM = me.eventCreator.create(event);
 
 		// Now attempt to find a line where we can place the event
 		startLine = me.findLineForEvent(event);
