@@ -198,6 +198,8 @@ window.GoogleEventLoader = function(service, loading) {
 				event.start = entrystartDate;
 				event.end = entryendDate;
 				event.length = length;
+				
+				event.googleEvent = entry;
 
 				if (entryendDate > startDate) {
 					results.push(event);

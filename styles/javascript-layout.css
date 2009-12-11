@@ -214,6 +214,7 @@ body {
 	line-height: 18px;
 	min-height: 18px;
 	text-shadow: #666 0px 0px 1px;
+	cursor: pointer;
 }
 
 .event.multi-day .text {
@@ -226,37 +227,44 @@ body {
 	opacity: 0.5;	
 }
 
-/* TODO: Colours for events */
-.event.colour-0 .inner {
-	background: #AF5455;
+.event.editing.tentative {
+	opacity: 1;
 }
 
-.event.colour-1 .inner {
-	background: #5F7FC9;
+.event.editing {
+	z-index: 100;
+	border: none;
+	margin: 0;
+	padding: 0;
 }
 
-.event.colour-2 .inner {
-	background: #659074;
+.event.updating .text {
+	background-image: url(../images/ajax-loader.gif);
+	background-repeat: no-repeat;
+	background-position: center right;
 }
 
-.event.colour-3 .inner {
-	background: #E1A64D;
+.event.error {
+	background: red;
 }
 
-.event.colour-4 .inner {
-	background: #71A89F;
+.editor {
+	opacity: 0.8;
+	margin-top: -1px;
 }
 
-.event.colour-5 .inner {
-	background: #7762C2;
-}
-
-.event.colour-6 .inner {
-	background: #5A7697;
-}
-
-.event.colour-7 .inner {
-	background: #6F7D7A;
+.editor textarea {
+	width: 100%;
+	border: none;
+	margin: 0;
+	padding: 0;
+	font-size: 12px;
+	line-height: 18px;
+	min-height: 18px;
+	overflow-x: auto; 
+	overflow-y: hidden; 
+	opacity: 1;
+	color: #444;
 }
 
 
