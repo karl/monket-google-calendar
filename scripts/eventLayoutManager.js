@@ -13,7 +13,7 @@ function EventLayoutManager(config, eventCreator) {
 	this.linesPerDay;
 	
 	me.constructor = function() {
-		// Create an event that week can use for working out attributes of events before displaying them
+		// Create an event that we can use for working out attributes of events before displaying them
 		$("#templates .event").clone().appendTo($("#layout-test")).attr("id", "layout-event");
 		
 		me.recaculateConstants = true;

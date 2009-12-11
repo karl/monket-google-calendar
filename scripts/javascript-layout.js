@@ -1,4 +1,3 @@
-// TODO: Have a link that scrolls you straight to today
 // TODO: Tidy this code further
 
 function MonketCalendarConfig() {
@@ -6,7 +5,6 @@ function MonketCalendarConfig() {
 	this.weekIdPrefix = "week-starting-";
 	this.dayIdPrefix = "day-";
 	this.eventColourPrefix = "colour-";
-	this.updateURL = "update/";
 }
 
 function Calendar(config, eventLoader, notification, eventLayoutManager, weekCreator, dayHighlighter) {
