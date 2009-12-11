@@ -9,17 +9,19 @@ function MonketCalendarConfig() {
 	this.updateURL = "update/";
 }
 
-function Calendar(config, eventLoader, notification, eventLayoutManager) {
+function Calendar(config, eventLoader, notification, eventLayoutManager, weekCreator, dayHighlighter) {
 	var me = this; // so that the object can always reference itself, even within event handlers
 	
-	this.config = config;
-	this.eventLoader = eventLoader;
-	this.notification = notification;
-	this.eventLayoutManager = eventLayoutManager;
+	me.config = config;
+	me.eventLoader = eventLoader;
+	me.notification = notification;
+	me.eventLayoutManager = eventLayoutManager;
+	me.weekCreator = weekCreator;
+	me.dayHighlighter = dayHighlighter;
 
-	this.events;
-	this.topWeekStartDate;
-	this.weeksToUpdate = [];
+	me.events;
+	me.topWeekStartDate;
+	me.weeksToUpdate = [];
 		
 	me.constructor = function () {
 		me.buildWeeks(me.getStartDate());
@@ -155,53 +157,9 @@ function Calendar(config, eventLoader, notification, eventLayoutManager) {
 		me.scrollToWeekStarting(startDate);
 	};
 	
-	me.highlightToday = function() {
-		today = $("#" + me.config.dayIdPrefix + new Date().customFormat(me.config.dateFormat));
-		me.highlightDay(today);
-	};
-	
-	me.highlightDay = function(day) {
-		$("#calendar .week td").removeClass("today");
-		day = $(day);
-		
-		if (day.length > 0) {
-			day.addClass("today");
-		}
-	};
-	
 	me.createWeek = function(weekStart) {
-		// Clone the week template and set it's id to it's start date
-		var week = $("#templates .week").clone().attr("id", me.config.weekIdPrefix + weekStart.customFormat(me.config.dateFormat));
-		
-		// Set the id of each day to that day's date 
-		$("td", week).attr("id", function (j) {
-			return me.config.dayIdPrefix + weekStart.addDays(j).customFormat(me.config.dateFormat);
-		});
-		
-		// Set the day label for each day, e.g. '12'
-		$(".day-label", week).each(function(j) {
-			var dayDate = weekStart.addDays(j);
-			var dayNumber = dayDate.customFormat("#D#");
-
-			// If this is the first day in the month then add a month label, e.g. 'February'
-			$(this).html(dayNumber);
-			if (dayNumber == "1") {
-				var monthLabel = $("#templates .month-label").clone().html(dayDate.customFormat("#MMMM#"));
-				$(this).after(monthLabel);
-				
-				$(this).parent().addClass("start-month");
-			}
-			
-			// if the this is todays date then highlight it
-			if (dayDate.customFormat(me.config.dateFormat) == new Date().customFormat(me.config.dateFormat)) {
-				me.highlightDay($(this).parent());
-			}
-			
-		});
-
-
+		var week = me.weekCreator.create(weekStart);
 		me.addWeekToUpdate(weekStart);
-		
 		return week;
 	};
 	
@@ -218,7 +176,7 @@ function Calendar(config, eventLoader, notification, eventLayoutManager) {
 	};
 	
 	me.doUpdate = function() {
-		me.highlightToday();
+		me.dayHighlighter.highlightToday();
 		// TODO: Update events from the server
 	};
 	

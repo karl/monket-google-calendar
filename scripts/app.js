@@ -18,9 +18,11 @@ google.setOnLoadCallback(function() {
 			
 			var colourMap = ColourMap;
 			var config = new MonketCalendarConfig();
+			var dayHighlighter = new DayHighlighter(config);
 			var eventCreator = new EventCreator(googleEventLoader, colourMap);
+			var weekCreator = new WeekCreator(config, dayHighlighter);
 			var eventLayoutManager = new EventLayoutManager(config, eventCreator);
-			var calendar = new Calendar(config, googleEventLoader, notification, eventLayoutManager);
+			var calendar = new Calendar(config, googleEventLoader, notification, eventLayoutManager, weekCreator, dayHighlighter);
 			
 		}, function() {
 			notification.show('Unable to load Google Calendars');
