@@ -5,13 +5,15 @@ window.GoogleEventLoader = function(service, loading) {
 	me.cache = {};
 	me.loading = loading;
 	
+	me.addEventHook = function() {};
+	me.removeEventHook = function() {};
+	
 	me.init = function(successCallback, failureCallback) {
 		me.loading.show();
 	    me.service.getAllCalendarsFeed('http://www.google.com/calendar/feeds/default/allcalendars/full',
 	    function(result) {
 			me.loading.hide();
 	        me.calendars = result.feed.entry;
-			console.log(me.calendars);
 			successCallback();
 	    },
 	    function failureCallback() {
@@ -262,6 +264,31 @@ window.GoogleEventLoader = function(service, loading) {
 		var startDate = event.start;
 		var cacheInfo = me.cache[me.getCacheKey(startDate)];
 		cacheInfo.entries.push(event);
+		
+		me.addEventHook(event);
+	};
+		
+	me.removeEvent = function(event) {
+		var startDate = event.start;
+		var cacheInfo = me.cache[me.getCacheKey(startDate)];
+		var cacheEntries = cacheInfo.entries;
+
+		for (var i = 0; i < cacheEntries.length; i++) {
+			var entry = cacheEntries[i];
+			
+			if (me.eventsAreEqual(event, entry)) {
+				Array.remove(cacheEntries, i);
+				me.removeEventHook(event);
+				return;
+			}
+		}
+		
+	};
+	
+	me.eventsAreEqual = function(a, b) {
+		return a.summary == b.summary
+			&& a.start == b.start
+			&& a.end == b.end;
 	};
 		
 };

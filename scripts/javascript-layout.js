@@ -22,6 +22,10 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 	me.weeksToUpdate = [];
 		
 	me.constructor = function () {
+		
+		me.eventLoader.addEventHook = me.eventChanged;
+		me.eventLoader.removeEventHook = me.eventChanged;
+		
 		me.buildWeeks(me.getStartDate());
 		me.updateInterval = setInterval(me.doUpdate, 1000 * 60 * 60); // update calendar every hour
 		
@@ -256,7 +260,6 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 			return;
 		}
 
-		var day = $(e.target);		
 		var week = $(e.target).parents('.week');
 		if (!week.hasClass('loaded')) {
 			return;
@@ -274,15 +277,22 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 			end: date.addDays(1),
 			length: 1
 		};
-		
-		var startDate = me.weekIdToDate(week.attr('id'));
-		
+				
 		// Should be something like:
 		me.eventLoader.addEvent(event);
-		me.eventLayoutManager.layoutEventsForWeek(startDate, me.eventLoader.getCachedEvents(startDate, startDate.addDays(6)));
-		$('.new', day).click();
 		
 	};
+	
+	me.eventChanged = function(event) {
+		// Find affected weeks, and ensure they are refreshed
+		var startDate = event.start;
+		while (startDate.getDay() != 1) {
+			startDate = startDate.addDays(-1);
+		}
 		
+		// Will need to be updated for multiline events
+		me.eventLayoutManager.layoutEventsForWeek(startDate, me.eventLoader.getCachedEvents(startDate, startDate.addDays(6)));
+	};
+			
 	me.constructor();
 }

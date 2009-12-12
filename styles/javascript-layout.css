@@ -23,6 +23,7 @@ body {
 	width: 100%;
 	margin-left: -1000em;
 	margin-top: -1000em;
+	position: relative;
 }
 
 #header {
@@ -286,3 +287,12 @@ body {
 	padding: 0.5em;
 }
 
+.editor .delete {
+	position: absolute;
+	top: 0;
+	right: 0;
+	background: red;
+	padding: 2px;
+	color: #fff;
+	cursor: pointer;
+}

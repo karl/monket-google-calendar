@@ -18,10 +18,6 @@ window.EventCreator = function(eventLoader, colourMap) {
 			eventDOM.addClass('end');
 		}
 		
-		if (event.isNew) {
-			eventDOM.addClass('new');
-		}
-		
 		eventDOM.width((event.weekLength * 14.2857) + "%");			
 
 		var color = me.eventLoader.calendars[event.calNumber - 1].getColor().getValue();
@@ -69,7 +65,7 @@ window.EventCreator = function(eventLoader, colourMap) {
 			eventDOM.removeClass('error');
 			
 			var removeEditor = function(e) {
-				if (!$(e.target).parent().hasClass('editor')) {
+				if (!e || !$(e.target).parent().hasClass('editor')) {
 					eventDOM.appendTo(parent);
 					eventDOM.css('top', top);
 			
@@ -79,7 +75,7 @@ window.EventCreator = function(eventLoader, colourMap) {
 					editor.remove();
 					eventDOM.removeClass('editing');
 									
-					if (text != startText) {
+					if (text != startText && !event.isDeleting) {
 						eventDOM.addClass('updating');
 						event.summary = text;
 						
@@ -107,6 +103,8 @@ window.EventCreator = function(eventLoader, colourMap) {
 						}
 						
 						// Force a refresh of the weeks that are affected
+					} else if (event.isDeleteing) {
+						eventDOM.addClass('updating');						
 					}
 				
 					$('body').unbind('click', removeEditor);
@@ -115,14 +113,43 @@ window.EventCreator = function(eventLoader, colourMap) {
 			};
 			
 			setTimeout(function() {
+				$('.delete', editor).click(function(e) {
+					event.isDeleting = true;
+					removeEditor();
+					
+					if (event.googleEvent) {
+						event.googleEvent.deleteEntry(function() {
+							console.log('Deleted event', arguments);
+							me.removeEvent(event, eventDOM);
+							
+						}, function() {
+							console.log('Failed to delete event', arguments);
+							eventDOM.removeClass('updating');
+							eventDOM.addClass('error');
+							event.isDeleting = false;
+						});
+					} else {
+						me.removeEvent(event, eventDOM);
+
+					}
+					
+					e.stopPropagation();
+				});			
+
 				$('body').click(removeEditor);
 				$("#body").mousewheel(removeEditor);
 			}, 0);
 			
-			
-			// For testing
-			window.event = eventDOM;
 		});
+
+		
+		if (event.isNew) {
+			eventDOM.addClass('new');
+			// Make the new event editable
+			setTimeout(function() {
+				eventDOM.click();
+			}, 0);
+		}		
 
 		return eventDOM;
 	};
@@ -133,6 +160,7 @@ window.EventCreator = function(eventLoader, colourMap) {
 			console.log('Created event');
 			event.googleEvent = response.entry;
 			eventDOM.removeClass('updating');
+			event.isNew = false;
 			
 		}, function() {
 
@@ -141,6 +169,11 @@ window.EventCreator = function(eventLoader, colourMap) {
 			eventDOM.addClass('error');
 			
 		});		
+	};
+	
+	me.removeEvent = function(event, eventDOM) {
+		eventDOM.remove();
+		me.eventLoader.removeEvent(event);
 	};
 	
 };
