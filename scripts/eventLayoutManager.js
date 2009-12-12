@@ -35,7 +35,7 @@ function EventLayoutManager(config, eventCreator) {
 		me.dayWidth = $("#calendar .week td:first").width();
 		me.dayHeight = $("#calendar .week td:first").innerHeight();
 		me.lineHeight = $("#layout-event").outerHeight();
-		me.linesPerDay = Math.floor(me.dayHeight / me.lineHeight) - 1;  // -1 line for the date marker in top right of each day
+		me.linesPerDay = 1000; // Math.floor(me.dayHeight / me.lineHeight) - 1;  // -1 line for the date marker in top right of each day
 
 		// set width of test event to single day
 		$("#layout-event").width(me.dayWidth);
@@ -159,7 +159,11 @@ function EventLayoutManager(config, eventCreator) {
 	// order events by week length, then by text length
 	me.eventSort = function(eventA, eventB) {
 		if (eventB.weekLength == eventA.weekLength) {
-			return eventB.summary.length - eventA.summary.length;
+			if (eventB.length == eventA.length) {
+				return eventB.summary.length - eventA.summary.length;
+			} else {
+				return eventB.length - eventA.length;
+			}
 		} else {
 			return eventB.weekLength - eventA.weekLength;
 		}

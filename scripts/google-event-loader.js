@@ -32,6 +32,12 @@ window.GoogleEventLoader = function(service, loading) {
 		// }
 	};
 	
+	me.getFeedUriForCalendar = function(calNumber) {
+		var calendar = me.calendars[calNumber - 1];
+		var uri = calendar.getLink().href;
+		return uri;
+	};
+	
 	me.load = function(startDate, endDate, successCallback, failureCallback) {
 		// if (me.offlineCache && me.datesInOfflineCache(startDate, endDate)) {
 		// 	successCallback(me.getOfflineCachedEvents(startDate, endDate), startDate, endDate);
@@ -210,8 +216,7 @@ window.GoogleEventLoader = function(service, loading) {
 			successCallback(results, startDate, endDate);
 		};
 		
-		var calendar = me.calendars[calNumber];
-		var uri = calendar.getLink().href;
+		var uri = me.getFeedUriForCalendar(calNumber + 1);
 
         var query = new google.gdata.calendar.CalendarEventQuery(uri);
 
@@ -225,6 +230,31 @@ window.GoogleEventLoader = function(service, loading) {
         query.setSortOrder('a');
 
         me.service.getEventsFeed(query, eventsCallback, failureCallback);
+	};
+	
+	me.createEvent = function(event, successCallback, failureCallback) {
+		// Create an instance of CalendarEventEntry representing the new event
+		var entry = new google.gdata.calendar.CalendarEventEntry();
+
+		// Set the title of the event
+		entry.setTitle(google.gdata.Text.create(event.summary));
+
+		// Create a When object that will be attached to the event
+		var when = new google.gdata.When();
+
+		// Set the start and end time of the When object
+		var startTime = new google.gdata.DateTime(event.start, true);
+		var endTime = new google.gdata.DateTime(event.end, true);
+		when.setStartTime(startTime);
+		when.setEndTime(endTime);
+		
+		// Add the When object to the event
+		entry.addTime(when);
+
+		var feedUri = me.getFeedUriForCalendar(event.calNumber);
+		
+		// Submit the request using the calendar service object
+		me.service.insertEntry(feedUri, entry, successCallback, failureCallback, google.gdata.calendar.CalendarEventEntry);		
 	};
 		
 };

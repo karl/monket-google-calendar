@@ -18,6 +18,10 @@ window.EventCreator = function(eventLoader, colourMap) {
 			eventDOM.addClass('end');
 		}
 		
+		if (event.isNew) {
+			eventDOM.addClass('new');
+		}
+		
 		eventDOM.width((event.weekLength * 14.2857) + "%");			
 
 		var color = me.eventLoader.calendars[event.calNumber - 1].getColor().getValue();
@@ -36,7 +40,7 @@ window.EventCreator = function(eventLoader, colourMap) {
 
 			var startText = $('.text', eventDOM).text();
 
-			$('textarea', editor).text(startText);
+			$('textarea', editor).text(event.isNew ? 'New event...' : startText);
 			$('textarea', editor).height($('.text', eventDOM).height());
 			$('textarea', editor).keyup(function() {
 				var text = $('textarea', editor).val();
@@ -60,6 +64,7 @@ window.EventCreator = function(eventLoader, colourMap) {
 						
 			$('.text', eventDOM).hide();			
 			$('.inner', eventDOM).append(editor);
+			$('textarea', editor).focus().select();
 			eventDOM.addClass('editing');
 			eventDOM.removeClass('error');
 			
@@ -76,20 +81,30 @@ window.EventCreator = function(eventLoader, colourMap) {
 									
 					if (text != startText) {
 						eventDOM.addClass('updating');
-						event.googleEvent.setTitle(google.gdata.Text.create(text));
-						event.googleEvent.updateEntry(function(response) {
+						event.summary = text;
+						
+						if (event.googleEvent) {
+						
+							event.googleEvent.setTitle(google.gdata.Text.create(text));
+							event.googleEvent.updateEntry(function(response) {
 							
-							console.log('Updated event!', arguments);
-							event.googleEvent = response.entry;
-							eventDOM.removeClass('updating');
+								console.log('Updated event!', arguments);
+								event.googleEvent = response.entry;
+								eventDOM.removeClass('updating');
 							
-						}, function() {
+							}, function() {
 							
-							console.log('Failed to update event :(', arguments);
-							eventDOM.removeClass('updating');
-							eventDOM.addClass('error');
+								console.log('Failed to update event :(', arguments);
+								eventDOM.removeClass('updating');
+								eventDOM.addClass('error');
 							
-						});
+							});
+						
+						} else {
+
+							me.createNewGoogleEvent(event, eventDOM);
+							
+						}
 						
 						// Force a refresh of the weeks that are affected
 					}
@@ -110,6 +125,22 @@ window.EventCreator = function(eventLoader, colourMap) {
 		});
 
 		return eventDOM;
+	};
+	
+	me.createNewGoogleEvent = function(event, eventDOM) {
+		me.eventLoader.createEvent(event, function(response) {
+
+			console.log('Created event');
+			event.googleEvent = response.entry;
+			eventDOM.removeClass('updating');
+			
+		}, function() {
+
+			console.log('Failed to create event');
+			eventDOM.removeClass('updating');
+			eventDOM.addClass('error');
+			
+		});		
 	};
 	
 };

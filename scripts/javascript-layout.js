@@ -26,6 +26,7 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 		me.updateInterval = setInterval(me.doUpdate, 1000 * 60 * 60); // update calendar every hour
 		
 		$("#body").mousewheel(me.doScroll);
+		$('#body').dblclick(me.doubleClick);
 		
 		me.notification.hide();
  	};
@@ -232,7 +233,7 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 		try {
 			// layout events in week
 			me.eventLayoutManager.layoutEventsForWeek(startDate, events);
-			$("#" + me.config.weekIdPrefix + startDate.customFormat(me.config.dateFormat)).removeClass("loading");
+			$("#" + me.config.weekIdPrefix + startDate.customFormat(me.config.dateFormat)).removeClass("loading").addClass("loaded");
 		} catch (exception) {
 			$.log("Unable to update week." + exception);
 			// Set failed-loading class on week
@@ -249,7 +250,47 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 		
 		return events;
 	};
+	
+	me.doubleClick = function(e) {
+		if (!$(e.target).hasClass('day')) {
+			return;
+		}
+
+		var day = $(e.target);		
+		var week = $(e.target).parents('.week');
+		if (!week.hasClass('loaded')) {
+			return;
+		}
 		
+		var id = $(e.target).attr('id');
+		var dateString = id.substring(me.config.dayIdPrefix.length);
+		var date = Date.parse(dateString);
+		
+		var event = {
+			isNew: true,
+			summary: '',
+			calNumber: 1,
+			start: date,
+			end: date.addDays(1),
+			length: 1
+		};
+		
+		var startDate = me.weekIdToDate(week.attr('id'));
+		
+		// Should be something like:
+		// me.eventCache.addEvent(event);
+		// me.eventLayoutManager.layoutEventsForWeek(startDate, events);
+		
+		me.eventLoader.load(startDate, startDate.addDays(6), function(events, startDate, endDate) {
+			events.push(event);
+			me.eventLayoutManager.layoutEventsForWeek(startDate, events);
+			
+			$('.new', day).click();
+			
+		}, function() {
+			console.log('Error creating event!');
+		});		
+	};
 		
 	me.constructor();
 }
