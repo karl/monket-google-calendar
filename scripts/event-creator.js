@@ -94,15 +94,17 @@ window.EventCreator = function(eventLoader, colourMap) {
 					
 					eventDOM.appendTo(parent);
 					eventDOM.css('top', top);
-			
-			
+					
 					$('.text', eventDOM).text(text).show();
+					event.summary = text;
 					editor.remove();
 					eventDOM.removeClass('editing');
+
+
+					me.eventLoader.updateEvent(event);	
 									
 					if (text != startText && !event.isDeleting) {
 						eventDOM.addClass('updating');
-						event.summary = text;
 						
 						if (event.googleEvent) {
 						
@@ -166,10 +168,6 @@ window.EventCreator = function(eventLoader, colourMap) {
 		
 		if (event.isNew) {
 			eventDOM.addClass('new');
-			// Make the new event editable
-			setTimeout(function() {
-				eventDOM.click();
-			}, 0);
 		}		
 
 		return eventDOM;

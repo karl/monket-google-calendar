@@ -24,6 +24,7 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 	me.constructor = function () {
 		
 		me.eventLoader.addEventHook = me.eventChanged;
+		me.eventLoader.updateEventHook = me.eventChanged;
 		me.eventLoader.removeEventHook = me.eventChanged;
 		
 		me.buildWeeks(me.getStartDate());
@@ -260,6 +261,7 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 			return;
 		}
 
+		var day = $(e.target);
 		var week = $(e.target).parents('.week');
 		if (!week.hasClass('loaded')) {
 			return;
@@ -278,8 +280,9 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 			length: 1
 		};
 				
-		// Should be something like:
 		me.eventLoader.addEvent(event);
+
+		$('.new', day).click();			
 		
 	};
 	

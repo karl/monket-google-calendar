@@ -6,6 +6,7 @@ window.GoogleEventLoader = function(service, loading) {
 	me.loading = loading;
 	
 	me.addEventHook = function() {};
+	me.updateEventHook = function() {};
 	me.removeEventHook = function() {};
 	
 	me.init = function(successCallback, failureCallback) {
@@ -266,6 +267,10 @@ window.GoogleEventLoader = function(service, loading) {
 		cacheInfo.entries.push(event);
 		
 		me.addEventHook(event);
+	};
+		
+	me.updateEvent = function(event) {
+		me.updateEventHook(event);
 	};
 		
 	me.removeEvent = function(event) {
