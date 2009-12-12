@@ -64,12 +64,37 @@ window.EventCreator = function(eventLoader, colourMap) {
 			eventDOM.addClass('editing');
 			eventDOM.removeClass('error');
 			
+			var deleteEvent = function() {
+				event.isDeleting = true;
+				removeEditor();
+				
+				if (event.googleEvent) {
+					event.googleEvent.deleteEntry(function() {
+						console.log('Deleted event', arguments);
+						me.removeEvent(event, eventDOM);
+						
+					}, function() {
+						console.log('Failed to delete event', arguments);
+						eventDOM.removeClass('updating');
+						eventDOM.addClass('error');
+						event.isDeleting = false;
+					});
+				} else {
+					me.removeEvent(event, eventDOM);
+				}				
+			};
+			
 			var removeEditor = function(e) {
 				if (!e || !$(e.target).parent().hasClass('editor')) {
+					var text = $.trim($('textarea', editor).val());
+					if (text == '' && !event.isDeleting) {
+						deleteEvent();
+						return;
+					}
+					
 					eventDOM.appendTo(parent);
 					eventDOM.css('top', top);
 			
-					var text = $('textarea', editor).val();
 			
 					$('.text', eventDOM).text(text).show();
 					editor.remove();
@@ -105,34 +130,31 @@ window.EventCreator = function(eventLoader, colourMap) {
 						// Force a refresh of the weeks that are affected
 					} else if (event.isDeleteing) {
 						eventDOM.addClass('updating');						
-					}
+					} 
 				
 					$('body').unbind('click', removeEditor);
 					$("#body").unbind('mousewheel', removeEditor);
 				}
 			};
+
+			$('textarea', editor).keyup(function(e) {
+				if(e.keyCode == 13) {
+					removeEditor();
+				} else if(e.keyCode == 27) {
+					$('textarea', editor).val(startText);
+					removeEditor();
+				}
+			});
+			
+			$('textarea', editor).keypress(function(e) {
+				if(e.keyCode == 13) {
+					e.preventDefault();
+				}
+			});
 			
 			setTimeout(function() {
 				$('.delete', editor).click(function(e) {
-					event.isDeleting = true;
-					removeEditor();
-					
-					if (event.googleEvent) {
-						event.googleEvent.deleteEntry(function() {
-							console.log('Deleted event', arguments);
-							me.removeEvent(event, eventDOM);
-							
-						}, function() {
-							console.log('Failed to delete event', arguments);
-							eventDOM.removeClass('updating');
-							eventDOM.addClass('error');
-							event.isDeleting = false;
-						});
-					} else {
-						me.removeEvent(event, eventDOM);
-
-					}
-					
+					deleteEvent();		
 					e.stopPropagation();
 				});			
 
@@ -141,7 +163,6 @@ window.EventCreator = function(eventLoader, colourMap) {
 			}, 0);
 			
 		});
-
 		
 		if (event.isNew) {
 			eventDOM.addClass('new');
