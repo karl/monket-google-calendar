@@ -278,18 +278,10 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 		var startDate = me.weekIdToDate(week.attr('id'));
 		
 		// Should be something like:
-		// me.eventCache.addEvent(event);
-		// me.eventLayoutManager.layoutEventsForWeek(startDate, events);
+		me.eventLoader.addEvent(event);
+		me.eventLayoutManager.layoutEventsForWeek(startDate, me.eventLoader.getCachedEvents(startDate, startDate.addDays(6)));
+		$('.new', day).click();
 		
-		me.eventLoader.load(startDate, startDate.addDays(6), function(events, startDate, endDate) {
-			events.push(event);
-			me.eventLayoutManager.layoutEventsForWeek(startDate, events);
-			
-			$('.new', day).click();
-			
-		}, function() {
-			console.log('Error creating event!');
-		});		
 	};
 		
 	me.constructor();

@@ -11,6 +11,7 @@ window.GoogleEventLoader = function(service, loading) {
 	    function(result) {
 			me.loading.hide();
 	        me.calendars = result.feed.entry;
+			console.log(me.calendars);
 			successCallback();
 	    },
 	    function failureCallback() {
@@ -255,6 +256,12 @@ window.GoogleEventLoader = function(service, loading) {
 		
 		// Submit the request using the calendar service object
 		me.service.insertEntry(feedUri, entry, successCallback, failureCallback, google.gdata.calendar.CalendarEventEntry);		
+	};
+	
+	me.addEvent = function(event) {
+		var startDate = event.start;
+		var cacheInfo = me.cache[me.getCacheKey(startDate)];
+		cacheInfo.entries.push(event);
 	};
 		
 };
