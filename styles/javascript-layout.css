@@ -32,6 +32,7 @@ body {
 	position: absolute;
 	top: 0;
 	opacity: 0.6;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
 	z-index: 100;
 }
 
@@ -82,6 +83,7 @@ body {
 	background: red;
 	color: #fff;
 	opacity: 0.5;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";	
     -moz-border-radius-bottomright: 0.5em;
  	-webkit-border-bottom-right-radius: 0.5em;
 	padding: 0 3px;
@@ -144,7 +146,8 @@ body {
 	-moz-border-radius: 0.5em;
 	-webkit-border-radius: 0.5em;
 	background: #888;
-	opacity: 0.80;
+	opacity: 0.8;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";	
 	color: #fff;
 	font-weight: bold;
 	font-size: 2em;
@@ -168,6 +171,7 @@ body {
 	margin: 0 auto;
 	background: #888;
 	opacity: 0.8;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
 	color: #fff;
 	font-weight: bold;
 	margin: 0 auto;
@@ -227,10 +231,12 @@ body {
 
 .event.tentative {
 	opacity: 0.5;	
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
 }
 
 .event.editing.tentative {
 	opacity: 1;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
 }
 
 .event.editing {
@@ -252,6 +258,7 @@ body {
 
 .editor {
 	opacity: 0.8;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
 	margin-top: -1px;
 }
 
@@ -266,6 +273,7 @@ body {
 	overflow-x: auto; 
 	overflow-y: hidden; 
 	opacity: 1;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
 	color: #444;
 }
 
@@ -278,6 +286,7 @@ body {
 	-webkit-border-radius: 0.5em;
 	background: #888;
 	opacity: 0.90;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
 	color: #fff;
 	font-weight: bold;
 	font-size: 2em;
