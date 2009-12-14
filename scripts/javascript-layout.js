@@ -32,6 +32,29 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 		
 		$("#body").mousewheel(me.doScroll);
 		$('#body').dblclick(me.doubleClick);
+
+		$(document).keydown(function(e) {
+			if ($(e.target).parent().hasClass('editor')) {
+				return;
+			}
+			
+			var weeks;
+			if (e.keyCode == 38) {
+				weeks = -1;
+			} else if (e.keyCode == 40) {
+				weeks = 1;
+			} else if (e.keyCode == 33) {
+				weeks = -4;
+			} else if (e.keyCode == 34) {
+				weeks = 4;
+			} else if (e.keyCode == 84) {
+				me.scrollToWeekStarting(new Date().addWeeks(-1));
+			}
+			
+			if (weeks) {
+				me.scrollToWeekStarting(me.topWeekStartDate.addWeeks(weeks));
+			}
+		});
 		
 		me.notification.hide();
  	};
