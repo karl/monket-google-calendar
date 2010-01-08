@@ -1,7 +1,3 @@
-google.load("gdata", "1");
-
-$.debug(true);
-
 google.setOnLoadCallback(function() {
 	var notification = new Notification();
 	var loading = new Loading();

@@ -27,6 +27,15 @@ window.EventCreator = function(eventLoader, colourMap) {
 			eventDOM.addClass('tentative');
 		}
 		
+		eventDOM.draggable({
+			revert: 'invalid',
+			distance: 10,
+			appendTo: $('#body'),
+			helper: 'clone',
+			opacity: 0.8,
+			containment: $('#body')
+		});
+		
 		eventDOM.click(function() {
 			if (eventDOM.hasClass('editing')) {
 				return;

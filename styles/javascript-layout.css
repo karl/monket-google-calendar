@@ -60,14 +60,7 @@ body {
 	position: relative;
 	-moz-user-select: none;
 }
-/*
-.week:hover {
-	position: relative;
-	overflow: visible;
-	z-index: 10;
-	bo rder: 1px solid red;
-}
-*/
+
 .week > table {
 	width: 100%;
 	height: 100%;
@@ -133,6 +126,10 @@ body {
 	background-image: url(../images/start-month-background.png);
 	background-repeat: repeat-y;
 	background-position: left top;
+}
+
+.day.ui-state-hover {
+	background: #eef !important;
 }
 
 #current-month-label {

@@ -4,6 +4,9 @@ Bugs
 * Recalculate event positions on resize
 * Recalculate week top on resize
 
+* Add ids to events
+* Disable editing for calendars that you can't edit
+
 Enhancements
 * Drag and drop events
 * Drag ends of events
