@@ -268,22 +268,13 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 			me.eventLayoutManager.layoutEventsForWeek(startDate, events);
 			$("#" + me.config.weekIdPrefix + startDate.customFormat(me.config.dateFormat)).removeClass("loading").addClass("loaded");
 		} catch (exception) {
-			$.log("Unable to update week." + exception);
+			console.log("Unable to update week.", exception);
 			// Set failed-loading class on week
 		}
 		
 		me.scheduleLoadData();
 	};
 
-	me.convertDates = function(events) {
-		$.each(events, function (i, event) {
-			event.start = Date.parse(event.start);
-			event.end = Date.parse(event.end);
-		});
-		
-		return events;
-	};
-	
 	me.doubleClick = function(e) {
 		if (!$(e.target).hasClass('day')) {
 			return;
@@ -313,15 +304,25 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 		$('.new', day).click();			
 		
 	};
-	
-	me.eventChanged = function(event) {
-		// Find affected weeks, and ensure they are refreshed
-		var startDate = event.start;
+
+	// Will need to be updated for multiline events
+	me.eventChanged = function(event, oldStartDate, oldEndDate) {
+		var startDate;
+
+		if (oldStartDate && oldEndDate) {
+			startDate = oldStartDate;
+			while (startDate.getDay() != 1) {
+				startDate = startDate.addDays(-1);
+			}
+
+			me.eventLayoutManager.layoutEventsForWeek(startDate, me.eventLoader.getCachedEvents(startDate, startDate.addDays(6)));
+		}
+		
+		startDate = event.start;
 		while (startDate.getDay() != 1) {
 			startDate = startDate.addDays(-1);
 		}
 		
-		// Will need to be updated for multiline events
 		me.eventLayoutManager.layoutEventsForWeek(startDate, me.eventLoader.getCachedEvents(startDate, startDate.addDays(6)));
 	};
 			

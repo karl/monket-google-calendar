@@ -1,3 +1,5 @@
+$.debug(true);
+
 google.setOnLoadCallback(function() {
 	var notification = new Notification();
 	var loading = new Loading();
@@ -16,7 +18,7 @@ google.setOnLoadCallback(function() {
 			var config = new MonketCalendarConfig();
 			var dayHighlighter = new DayHighlighter(config);
 			var eventCreator = new EventCreator(googleEventLoader, colourMap);
-			var weekCreator = new WeekCreator(config, dayHighlighter);
+			var weekCreator = new WeekCreator(config, dayHighlighter, googleEventLoader);
 			var eventLayoutManager = new EventLayoutManager(config, eventCreator);
 			var calendar = new Calendar(config, googleEventLoader, notification, eventLayoutManager, weekCreator, dayHighlighter);
 			

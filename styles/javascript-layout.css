@@ -1,5 +1,6 @@
-html, body, #calendar {
+html, body, #calendar, #body {
 	height: 100%;
+	overflow: hidden;
 }
 
 body, table {
@@ -45,8 +46,6 @@ body {
 }
 
 #body {
-	height: 100%;
-	overflow: hidden;
 	background: #fff;
 }
 

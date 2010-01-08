@@ -1,6 +1,4 @@
 Bugs
-* On first load all events appear on left
-
 * Scrolling is too sensitive in Chrome
 * Fix editing bugs
 * Recalculate event positions on resize

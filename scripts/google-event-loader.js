@@ -203,6 +203,7 @@ window.GoogleEventLoader = function(service, loading) {
 
 
 				var event = {};
+				event.id = entry.getId();
 				event.summary = $.trim(entry.getTitle().getText());
 				event.calNumber = calNumber + 1;
 				event.start = entrystartDate;
@@ -269,8 +270,8 @@ window.GoogleEventLoader = function(service, loading) {
 		me.addEventHook(event);
 	};
 		
-	me.updateEvent = function(event) {
-		me.updateEventHook(event);
+	me.updateEvent = function(event, oldStart, oldEnd) {
+		me.updateEventHook(event, oldStart, oldEnd);
 	};
 		
 	me.removeEvent = function(event) {

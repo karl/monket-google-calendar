@@ -6,6 +6,7 @@ window.EventCreator = function(eventLoader, colourMap) {
 	me.create = function(event) {
 		// Build the DOM object for the event
 		var eventDOM = $("#templates .event").clone();
+		eventDOM.data('event', event);
 
 		$(".text", eventDOM).text(event.summary);
 		if (event.length > 1) {
@@ -28,12 +29,22 @@ window.EventCreator = function(eventLoader, colourMap) {
 		}
 		
 		eventDOM.draggable({
-			revert: 'invalid',
+			revert: true,
 			distance: 10,
-			appendTo: $('#body'),
+			appendTo: $('#calendar'),
 			helper: 'clone',
-			opacity: 0.8,
-			containment: $('#body')
+			scroll: false,
+			start: function(ev, ui) {
+				console.log(arguments);
+				eventDOM.hide();
+				
+				ui.helper.width((event.length * 14.2857) + "%");			
+				ui.helper.addClass('start');
+				ui.helper.addClass('end');
+			},
+			stop: function() {
+				eventDOM.show();
+			}
 		});
 		
 		eventDOM.click(function() {
@@ -189,6 +200,7 @@ window.EventCreator = function(eventLoader, colourMap) {
 			event.googleEvent = response.entry;
 			eventDOM.removeClass('updating');
 			event.isNew = false;
+			event.id = response.entry.getId();
 			
 		}, function() {
 
