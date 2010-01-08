@@ -61,7 +61,7 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 
 	me.getStartDate = function() {
 		// Work out the start date (either today or a date given on the location hash)
-		var startDate = new Date().addWeeks(-1);		
+		var startDate = me.getTodaysDate().addWeeks(-1);		
 		try {
 			startDate = Date.parse(location.hash.substring(1));
 		} catch (exception) {
@@ -69,6 +69,11 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 		}
 		
 		return startDate;
+	};
+	
+	me.getTodaysDate = function() {
+		var now = new Date();
+		return new Date(now.getFullYear(), now.getMonth(), now.getDate());
 	};
 
 	me.doScroll = function(event, delta) {

@@ -79,11 +79,11 @@ window.EventCreator = function(eventLoader, colourMap) {
 				
 				if (event.googleEvent) {
 					event.googleEvent.deleteEntry(function() {
-						console.log('Deleted event', arguments);
+						$.log('Deleted event', arguments);
 						me.removeEvent(event, eventDOM);
 						
 					}, function() {
-						console.log('Failed to delete event', arguments);
+						$.log('Failed to delete event', arguments);
 						eventDOM.removeClass('updating');
 						eventDOM.addClass('error');
 						event.isDeleting = false;
@@ -120,13 +120,13 @@ window.EventCreator = function(eventLoader, colourMap) {
 							event.googleEvent.setTitle(google.gdata.Text.create(text));
 							event.googleEvent.updateEntry(function(response) {
 							
-								console.log('Updated event!', arguments);
+								$.log('Updated event!', arguments);
 								event.googleEvent = response.entry;
 								eventDOM.removeClass('updating');
 							
 							}, function() {
 							
-								console.log('Failed to update event :(', arguments);
+								$.log('Failed to update event :(', arguments);
 								eventDOM.removeClass('updating');
 								eventDOM.addClass('error');
 							
@@ -185,14 +185,14 @@ window.EventCreator = function(eventLoader, colourMap) {
 	me.createNewGoogleEvent = function(event, eventDOM) {
 		me.eventLoader.createEvent(event, function(response) {
 
-			console.log('Created event');
+			$.log('Created event');
 			event.googleEvent = response.entry;
 			eventDOM.removeClass('updating');
 			event.isNew = false;
 			
 		}, function() {
 
-			console.log('Failed to create event');
+			$.log('Failed to create event');
 			eventDOM.removeClass('updating');
 			eventDOM.addClass('error');
 			

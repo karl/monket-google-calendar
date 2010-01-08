@@ -36,7 +36,7 @@ window.WeekCreator = function(config, dayHighlighter) {
 		$('.day', week).droppable({
 			hoverClass: 'ui-state-hover',
 			drop: function(event, ui) {
-				console.log('Drop event!', this, event, ui);
+				$.log('Drop event!', this, event, ui);
 				
 				// Get event object from id
 				
