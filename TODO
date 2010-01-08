@@ -1,10 +1,12 @@
+Next:
+* Resize events using start/end handles
+
+
 Bugs
 * Scrolling is too sensitive in Chrome
 * Fix editing bugs
 * Recalculate event positions on resize
 * Recalculate week top on resize
-
-* Add ids to events
 * Disable editing for calendars that you can't edit
 
 Enhancements

@@ -314,8 +314,12 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 			while (startDate.getDay() != 1) {
 				startDate = startDate.addDays(-1);
 			}
+			
+			while (startDate < oldEndDate) {
+				me.eventLayoutManager.layoutEventsForWeek(startDate, me.eventLoader.getCachedEvents(startDate, startDate.addDays(6)));
+				startDate = startDate.addWeeks(1);				
+			}
 
-			me.eventLayoutManager.layoutEventsForWeek(startDate, me.eventLoader.getCachedEvents(startDate, startDate.addDays(6)));
 		}
 		
 		startDate = event.start;
@@ -323,7 +327,11 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 			startDate = startDate.addDays(-1);
 		}
 		
-		me.eventLayoutManager.layoutEventsForWeek(startDate, me.eventLoader.getCachedEvents(startDate, startDate.addDays(6)));
+		while (startDate < event.end) {
+			me.eventLayoutManager.layoutEventsForWeek(startDate, me.eventLoader.getCachedEvents(startDate, startDate.addDays(6)));
+			startDate = startDate.addWeeks(1);				
+		}
+		
 	};
 			
 	me.constructor();
