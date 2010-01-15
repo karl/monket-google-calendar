@@ -77,8 +77,10 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 	};
 
 	me.doScroll = function(event, delta) {
+		console.log(delta);
+		
 		// Work out the start date of the new top week and scroll to it
-		var multiplier = $.browser.mozilla ? -3 : -0.5;
+		var multiplier = $.browser.mozilla ? -3 : -1;
 		me.scrollToWeekStarting(me.topWeekStartDate.addWeeks(Math.round(delta * multiplier)));
 		
 		return false; // prevent default scolling behaviour
