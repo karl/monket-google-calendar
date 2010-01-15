@@ -33,6 +33,14 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 		$("#body").mousewheel(me.doScroll);
 		$('#body').dblclick(me.doubleClick);
 
+		$('#body').mousedown(me.handlePanning);
+		$(document).mouseup(function() {
+			$('#body').unbind('mousemove');
+			$('body').css('cursor', 'auto');
+			me.scrollToWeekStarting(me.topWeekStartDate);				
+		});
+		document.onselectstart = function () { return false; };
+
 		$(document).keydown(function(e) {
 			if ($(e.target).parent().hasClass('editor')) {
 				return;
@@ -59,6 +67,42 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 		me.notification.hide();
  	};
 
+	me.handlePanning = function(e) {
+		if ($(e.target).parents().hasClass('event')) {
+			return;
+		}
+
+		var dayHeight = $("#calendar .week td:first").innerHeight();
+
+		var startY = e.pageY;
+		var startWeekDate = me.topWeekStartDate;
+		var startWeek = $("#" + me.config.weekIdPrefix + startWeekDate.customFormat(me.config.dateFormat));
+		$('body').css('cursor', 'move');
+		
+		$(this).mousemove(function(e) {
+			var delta = -(e.pageY - startY);
+			
+			// var weeks = delta / dayHeight;
+			// weeks = delta > 0 ? Math.floor(weeks) : Math.ceil(weeks);
+			// 
+			// var offset = delta % dayHeight;
+
+			var weeks = delta / 50;
+			weeks = delta > 0 ? Math.floor(weeks) : Math.ceil(weeks);
+			
+			var newWeek = startWeekDate.addWeeks(weeks);
+			if (newWeek - me.topWeekStartDate != 0) {
+				me.scrollToWeekStarting(newWeek);				
+				// me.scrollToWeekStarting(newWeek, offset, true);				
+				// setTimeout(function() {
+				// 	$('#body').scrollTo(me.topWeek, 0, {offset: {top: offset}});
+				// }, 1);
+			// } else {
+				// $('#body').scrollTo(me.topWeek, 0, {offset: {top: offset}});
+			}
+		});
+	};
+
 	me.getStartDate = function() {
 		// Work out the start date (either today or a date given on the location hash)
 		var startDate = me.getTodaysDate().addWeeks(-1);		
@@ -77,8 +121,6 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 	};
 
 	me.doScroll = function(event, delta) {
-		console.log(delta);
-		
 		// Work out the start date of the new top week and scroll to it
 		var multiplier = $.browser.mozilla ? -3 : -1;
 		me.scrollToWeekStarting(me.topWeekStartDate.addWeeks(Math.round(delta * multiplier)));
@@ -86,7 +128,7 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 		return false; // prevent default scolling behaviour
 	};
 	
-	me.scrollToWeekStarting = function(date) {
+	me.scrollToWeekStarting = function(date, offset, immediate) {
 		clearTimeout(me.finishedScrollingTimeout);
 		
 		weekDate = me.getWeekStartDate(date);
@@ -94,6 +136,11 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 		// Preload week elements as we near the edge of the currently loaded weeks
 		me.createWeekElementsAsRequired(weekDate.addWeeks(-2));
 		me.createWeekElementsAsRequired(weekDate.addWeeks(6));
+				
+		if (me.scrollingStartTime == null) {
+			me.scrollingStartTime = new Date();
+			me.scrollingStartWeek = me.topWeekStartDate;
+		}
 				
 		// Get the new top week
 		me.topWeekStartDate = weekDate;
@@ -113,14 +160,18 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 			$("#body").queue("fx", [ $("#body").queue().pop() ]);
 		}
 		
-		// Only show the notification if we have been scrolling for while
-		if (me.scrollingStartTime == null) {
-			me.scrollingStartTime = new Date();
-		} else if (me.scrollingStartTime.getTime() + 500 < new Date().getTime()) {
+
+		if (Math.abs(me.topWeekStartDate - me.scrollingStartWeek) > 3024000000) {
+			me.showingScrollNotification = true;
+		}
+
+		if (me.showingScrollNotification) {
 			me.notification.show(me.topWeekStartDate.addWeeks(2).customFormat("#MMMM#<br>#YYYY#"));
 		}
 		
-		$("#body").scrollTo(me.topWeek, 200, {easing : 'easeOutQuad', onAfter : me.finishedScrolling });
+		var duration = immediate ? 0 : 200;
+		
+		$("#body").scrollTo(me.topWeek, duration, {easing : 'easeOutQuad', onAfter : me.finishedScrolling, offset: {top: offset} });
 	};
 	
 	me.setURLHash = function() {
@@ -134,10 +185,13 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 			me.setURLHash();
 			document.title = me.topWeekStartDate.addWeeks(2).customFormat("#MMMM# - #YYYY#") + ' - Monket Google Calendar';
 
-			me.finishedScrollingTimeout = setTimeout(function() { 
-				me.notification.hide(); 
-				me.scrollingStartTime = null; 
-			}, 1000);
+			if (me.scrollingStartTime) {
+				me.finishedScrollingTimeout = setTimeout(function() { 
+					me.notification.hide(); 
+					me.scrollingStartTime = null; 
+					me.showingScrollNotification = false;
+				}, 1000);
+			}
 		}
 	};
 	
@@ -217,12 +271,14 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 	me.addWeekToUpdate = function(date) {
 		me.weeksToUpdate[me.weeksToUpdate.length] = date;
 
+		
 		me.scheduleLoadData();
 	};
 	
 	me.scheduleLoadData = function() {
 		if (me.scrollingStartTime) {
-			setTimeout(me.scheduleLoadData);
+			setTimeout(me.scheduleLoadData, 200);
+			return;
 		}
 		
 		if (me.loadDataTimeout == null && me.weeksToUpdate.length > 0) {

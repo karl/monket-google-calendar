@@ -34,6 +34,7 @@ window.EventCreator = function(eventLoader, colourMap) {
 			appendTo: $('#calendar'),
 			helper: 'clone',
 			scroll: false,
+			cursor: 'move',
 			start: function(ev, ui) {
 				console.log(arguments);
 				eventDOM.hide();

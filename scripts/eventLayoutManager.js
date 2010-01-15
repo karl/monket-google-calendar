@@ -77,8 +77,12 @@ function EventLayoutManager(config, eventCreator) {
 		// Now attempt to find a line where we can place the event
 		startLine = me.findLineForEvent(event);
 		if (startLine != null) {
-			eventDOM.css({ top: (startLine + 1) * me.lineHeight });
+			eventDOM.css({ 
+				top: (startLine + 1) * me.lineHeight
+//				display: 'none'
+			});
 			eventDOM.appendTo($("#" + me.config.dayIdPrefix + event.weekStart.customFormat(me.config.dateFormat)));	
+//			eventDOM.fadeIn();
 			
 			me.markLayoutSpaceAsUsed(event, startLine);	
 		} else {
