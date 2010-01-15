@@ -180,18 +180,21 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 	
 	me.finishedScrolling = function() {
 		clearTimeout(me.finishedScrollingTimeout);
+		clearTimeout(me.finishedScrollingTimeout2);
 		
 		if ($("#body").queue().length == 0) {
 			me.setURLHash();
 			document.title = me.topWeekStartDate.addWeeks(2).customFormat("#MMMM# - #YYYY#") + ' - Monket Google Calendar';
 
-			if (me.scrollingStartTime) {
+				me.finishedScrollingTimeout2 = setTimeout(function() { 
+					me.scrollingStartTime = null;
+					me.scheduleLoadData();
+				}, 400);
+				
 				me.finishedScrollingTimeout = setTimeout(function() { 
 					me.notification.hide(); 
-					me.scrollingStartTime = null; 
 					me.showingScrollNotification = false;
 				}, 1000);
-			}
 		}
 	};
 	
@@ -277,7 +280,6 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 	
 	me.scheduleLoadData = function() {
 		if (me.scrollingStartTime) {
-			setTimeout(me.scheduleLoadData, 200);
 			return;
 		}
 		
@@ -324,7 +326,10 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 		try {
 			// layout events in week
 			me.eventLayoutManager.layoutEventsForWeek(startDate, events);
-			$("#" + me.config.weekIdPrefix + startDate.customFormat(me.config.dateFormat)).removeClass("loading").addClass("loaded");
+			$("#" + me.config.weekIdPrefix + startDate.customFormat(me.config.dateFormat))
+				.removeClass("loading")
+				.addClass("loaded")
+				.animate({opacity: 1}, 200);
 		} catch (exception) {
 			console.log("Unable to update week.", exception);
 			// Set failed-loading class on week

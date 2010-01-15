@@ -7,6 +7,7 @@ window.WeekCreator = function(config, dayHighlighter, eventLoader) {
 	me.create = function(weekStart) {
 		// Clone the week template and set it's id to it's start date
 		var week = $("#templates .week").clone().attr("id", me.config.weekIdPrefix + weekStart.customFormat(me.config.dateFormat));
+		week.css('opacity', 0.3);
 		
 		// Set the id of each day to that day's date 
 		$("td", week).attr("id", function (j) {
