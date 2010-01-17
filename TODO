@@ -1,13 +1,11 @@
 Next:
-* Resize events using start/end handles
 * Fix dragging over the year boundary
-
 
 Bugs
 * Recalculate event positions on resize
 * Recalculate week top on resize
-* Disable editing for calendars that you can't edit
 
 Enhancements
 * Faster loading
 * Have a link that scrolls you straight to today
+* Error notificiations

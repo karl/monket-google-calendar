@@ -216,6 +216,9 @@ body {
 	font-size: 12px;
 	line-height: 18px;
 	min-height: 18px;
+}
+
+.event.ui-draggable {
 	cursor: pointer;
 }
 

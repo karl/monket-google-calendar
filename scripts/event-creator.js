@@ -29,6 +29,18 @@ window.EventCreator = function(eventLoader, colourMap, config) {
 			eventDOM.addClass('tentative');
 		}
 		
+		if (event.editable) {
+			me.makeEditable(event, eventDOM);
+		}
+		
+		if (event.isNew) {
+			eventDOM.addClass('new');
+		}		
+
+		return eventDOM;
+	};
+	
+	me.makeEditable = function(event, eventDOM) {
 		var dragging = {};
 		eventDOM.draggable({
 			revert: true,
@@ -324,11 +336,6 @@ window.EventCreator = function(eventLoader, colourMap, config) {
 			
 		});
 		
-		if (event.isNew) {
-			eventDOM.addClass('new');
-		}		
-
-		return eventDOM;
 	};
 	
 	me.createNewGoogleEvent = function(event, eventDOM) {

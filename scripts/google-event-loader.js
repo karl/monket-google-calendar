@@ -201,6 +201,9 @@ window.GoogleEventLoader = function(service, loading) {
 					entryendDate = entrystartDate.addDays(length);
 				}
 
+				var accessValue = me.calendars[calNumber].getAccessLevel().getValue(); 
+				var editable = accessValue == google.gdata.calendar.AccessLevelProperty.VALUE_OWNER 
+					|| accessValue == google.gdata.calendar.AccessLevelProperty.VALUE_EDITOR;
 
 				var event = {};
 				event.id = entry.getId();
@@ -209,6 +212,7 @@ window.GoogleEventLoader = function(service, loading) {
 				event.start = entrystartDate;
 				event.end = entryendDate;
 				event.length = length;
+				event.editable = editable;
 				
 				event.googleEvent = entry;
 
