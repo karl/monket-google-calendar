@@ -41,6 +41,10 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 		});
 		document.onselectstart = function () { return false; };
 
+		$(window).resize(function() {
+			me.scrollToWeekStarting(me.topWeekStartDate);
+		});
+
 		$(document).keydown(function(e) {
 			if ($(e.target).parent().hasClass('editor')) {
 				return;

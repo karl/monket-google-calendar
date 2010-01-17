@@ -42,26 +42,33 @@ window.EventCreator = function(eventLoader, colourMap, config) {
 			start: function(ev, ui) {
 				dragging.start = event.start;
 				dragging.end = event.end;
+				
+				dragging.day = null;
+				$('#body').mousemove(function(e) {
+					dragging.day = $(e.target).parents('.day').add(e.target);
+				});
 			},
 			drag: function() {
 
-				var id = $('.day:hover').attr('id');
-				var dateString = id.substring(me.config.dayIdPrefix.length);
-				var date = Date.parse(dateString);
+				if (dragging.day) {
+ 					var id = dragging.day.attr('id');
+					var dateString = id.substring(me.config.dayIdPrefix.length);
+					var date = Date.parse(dateString);
 				
-				var oldStart = event.start;
-				var oldEnd = event.end;
+					var oldStart = event.start;
+					var oldEnd = event.end;
 
-				event.start = date;
-				event.end = date.addDays(event.length);
+					event.start = date;
+					event.end = date.addDays(event.length);
 
-				if (event.start - oldStart != 0 || event.end - oldEnd != 0) {
-					me.eventLoader.updateEvent(event, oldStart, oldEnd);							
+					if (event.start - oldStart != 0 || event.end - oldEnd != 0) {
+						me.eventLoader.updateEvent(event, oldStart, oldEnd);							
+					}
 				}
-
 				
 			},
 			stop: function() {
+				$('#body').unbind('mousemove');
 
 				if (event.start - dragging.start != 0 || event.end - dragging.end != 0) {
 
@@ -91,69 +98,89 @@ window.EventCreator = function(eventLoader, colourMap, config) {
 		});
 
 		var resizing = {};
-		eventDOM.resizable({
-			handles: 'e, w',
-			ghost: true,
-			start: function(e, ui) {
-				resizing.direction = $(e.originalTarget).hasClass('ui-resizable-w') ? 'start' :'end';
-				resizing.x = e.pageX;
-				resizing.y = e.pageY;
 
-				resizing.start = event.start;
-				resizing.end = event.end;
-				console.log(resizing);
-			},
-			resize: function(e, ui) {
-				
-				var id = $('.day:hover').attr('id');
-				var dateString = id.substring(me.config.dayIdPrefix.length);
-				var date = Date.parse(dateString);
-				
-				var oldStart = event.start;
-				var oldEnd = event.end;
-				
-				if (resizing.direction == 'start') {
-					event.start = date < resizing.end ? date : resizing.end.addDays(-1);
-				} else if (resizing.direction == 'end') {
-					event.end = date > resizing.start ? date.addDays(1) : resizing.start.addDays(1);
-				}
+		var handles = [];
+		if (event.isStart) {
+			handles.push('w');
+		}
+		if (event.isEnd) {
+			handles.push('e');
+		}
 
-				event.length = Math.round((event.end - event.start) / (1000 * 60 * 60 * 24));
+		if (event.isStart || event.isEnd) {
+			eventDOM.resizable({
+				handles: handles.join(', '),
+				ghost: true,
+				start: function(e, ui) {
+					resizing.direction = (e.pageX < (ui.originalPosition.left + (ui.originalSize.width / 2))) ? 'start' :'end';
+					resizing.x = e.pageX;
+					resizing.y = e.pageY;
 
-				if (event.start - oldStart != 0 || event.end - oldEnd != 0) {
-					me.eventLoader.updateEvent(event, oldStart, oldEnd);							
-				}
+					resizing.start = event.start;
+					resizing.end = event.end;
 
-			},
-			stop: function(e, ui) {
-				eventDOM.remove();
-				me.eventLoader.updateEvent(event);							
-
-				if (event.start - resizing.start != 0 || event.end - resizing.end != 0) {
-					// Update google event
-					var when = new google.gdata.When();
-					var startTime = new google.gdata.DateTime(event.start, true);
-					var endTime = new google.gdata.DateTime(event.end, true);
-					when.setStartTime(startTime);
-					when.setEndTime(endTime);
-					event.googleEvent.setTimes([when]);
-
-					event.googleEvent.updateEntry(function(response) {
-
-						console.log('Updated event!', arguments);
-						event.googleEvent = response.entry;
-						event.googleEvent.getSequence().setValue(event.googleEvent.getSequence().getValue() + 1);
-
-
-					}, function() {
-
-						console.log('Failed to update event :(', arguments);
-
+					resizing.day = null;
+					$('#body').mousemove(function(e) {
+						resizing.day = $(e.target).parents('.day').add(e.target);
 					});
+				},
+				resize: function(e, ui) {
+
+					if (resizing.day) {
+						var id = resizing.day.attr('id');
+						var dateString = id.substring(me.config.dayIdPrefix.length);
+						var date = Date.parse(dateString);
+
+						var oldStart = event.start;
+						var oldEnd = event.end;
+
+						if (resizing.direction == 'start') {
+							event.start = date < resizing.end ? date : resizing.end.addDays(-1);
+						} else if (resizing.direction == 'end') {
+							event.end = date > resizing.start ? date.addDays(1) : resizing.start.addDays(1);
+						}
+
+						event.length = Math.round((event.end - event.start) / (1000 * 60 * 60 * 24));
+
+						if (event.start - oldStart != 0 || event.end - oldEnd != 0) {
+							me.eventLoader.updateEvent(event, oldStart, oldEnd);							
+						}
+					}
+
+				},
+				stop: function(e, ui) {
+					$('#body').unbind('mousemove');
+
+					eventDOM.remove();
+					me.eventLoader.updateEvent(event);							
+
+					if (event.start - resizing.start != 0 || event.end - resizing.end != 0) {
+						// Update google event
+						var when = new google.gdata.When();
+						var startTime = new google.gdata.DateTime(event.start, true);
+						var endTime = new google.gdata.DateTime(event.end, true);
+						when.setStartTime(startTime);
+						when.setEndTime(endTime);
+						event.googleEvent.setTimes([when]);
+
+						event.googleEvent.updateEntry(function(response) {
+
+							console.log('Updated event!', arguments);
+							event.googleEvent = response.entry;
+							event.googleEvent.getSequence().setValue(event.googleEvent.getSequence().getValue() + 1);
+
+
+						}, function() {
+
+							console.log('Failed to update event :(', arguments);
+
+						});
+					}
+
 				}
-				
-			}
-		});
+			});
+		}
+
 		
 		eventDOM.click(function() {
 			if (eventDOM.hasClass('editing')) {
@@ -161,6 +188,7 @@ window.EventCreator = function(eventLoader, colourMap, config) {
 			}
 			
 			var editor = $('#templates .editor').clone();
+			var delButton = $('#templates .delete').clone();
 
 			var startText = $('.text', eventDOM).text();
 
@@ -188,6 +216,7 @@ window.EventCreator = function(eventLoader, colourMap, config) {
 						
 			$('.text', eventDOM).hide();			
 			$('.inner', eventDOM).append(editor);
+			$(eventDOM).append(delButton);
 			$('textarea', editor).focus().select();
 			eventDOM.addClass('editing');
 			eventDOM.removeClass('error');
@@ -226,6 +255,7 @@ window.EventCreator = function(eventLoader, colourMap, config) {
 					$('.text', eventDOM).text(text).show();
 					event.summary = text;
 					editor.remove();
+					delButton.remove();
 					eventDOM.removeClass('editing');
 
 
@@ -283,7 +313,7 @@ window.EventCreator = function(eventLoader, colourMap, config) {
 			});
 			
 			setTimeout(function() {
-				$('.delete', editor).click(function(e) {
+				$(delButton).click(function(e) {
 					deleteEvent();		
 					e.stopPropagation();
 				});			

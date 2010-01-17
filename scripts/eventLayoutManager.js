@@ -5,7 +5,7 @@ function EventLayoutManager(config, eventCreator) {
 	this.config = config;
 	this.eventCreator = eventCreator;
 
-	this.recaculateConstants;
+	this.recalculateConstants;
 
 	this.dayWidth;
 	this.dayHeight;
@@ -16,13 +16,24 @@ function EventLayoutManager(config, eventCreator) {
 		// Create an event that we can use for working out attributes of events before displaying them
 		$("#templates .event").clone().appendTo($("#layout-test")).attr("id", "layout-event");
 		
-		me.recaculateConstants = true;
-		// TODO: recaculate constants on browser resize
+		me.recalculateConstants = true;
+		
+		$(window).resize(me.resize);
+	};
+	
+	me.resize = function() {
+		me.recalculateConstants = true;
+		
+		clearTimeout(me.resizeTimeout);
+		me.resizeTimeout = setTimeout(function() {
+			//console.log('Re-layout weeks');
+			
+		}, 500);
 	};
 
 	// only recaculate constants if they need redefining (e.g. first layout or browser resize)
 	me.getConstants = function() {
-		if (me.recaculateConstants) {
+		if (me.recalculateConstants) {
 			me.calculateConstants();
 		}
 	};

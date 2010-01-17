@@ -301,14 +301,20 @@ body {
 	padding: 0.5em;
 }
 
-.editor .delete {
+.event .delete {
 	position: absolute;
-	top: 0;
-	right: 0;
-	background: red;
-	padding: 2px;
+	top: -5px;
+	right: -3px;
+	background: #e00;
+	padding: 1px 3px;
 	color: #fff;
 	cursor: pointer;
+	-moz-border-radius: 1em;
+	-webkit-border-radius: 1em;
+}
+
+.event .delete:hover {
+	background: #f00;
 }
 
 .event .ui-resizable-handle {
