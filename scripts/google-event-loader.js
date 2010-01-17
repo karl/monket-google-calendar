@@ -192,7 +192,7 @@ window.GoogleEventLoader = function(service, loading) {
 
 					// Get the whole number of days difference
 					// And then add on any extra hours in the last day
-					// Done like this to avoid issues when summar time changes
+					// Done like this to avoid issues when summer time changes
 					length = Math.round((endDate - entrystartDate) / (1000 * 60 * 60 * 24));
 					if ((endTime - endDate) > 0) {
 						length++;

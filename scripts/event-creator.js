@@ -1,7 +1,8 @@
-window.EventCreator = function(eventLoader, colourMap) {
+window.EventCreator = function(eventLoader, colourMap, config) {
 	var me = this;
 	me.eventLoader = eventLoader;
 	me.colourMap = colourMap;
+	me.config = config;
 	
 	me.create = function(event) {
 		// Build the DOM object for the event
@@ -35,6 +36,7 @@ window.EventCreator = function(eventLoader, colourMap) {
 			helper: 'clone',
 			scroll: false,
 			cursor: 'move',
+			handle: $('.text', eventDOM),
 			start: function(ev, ui) {
 				console.log(arguments);
 				eventDOM.hide();
@@ -45,6 +47,71 @@ window.EventCreator = function(eventLoader, colourMap) {
 			},
 			stop: function() {
 				eventDOM.show();
+			}
+		});
+
+		var resizing = {};
+		eventDOM.resizable({
+			handles: 'e, w',
+			ghost: true,
+			start: function(e, ui) {
+				resizing.direction = $(e.originalTarget).hasClass('ui-resizable-w') ? 'start' :'end';
+				resizing.x = e.pageX;
+				resizing.y = e.pageY;
+
+				resizing.start = event.start;
+				resizing.end = event.end;
+				console.log(resizing);
+			},
+			resize: function(e, ui) {
+				
+				var id = $('.day:hover').attr('id');
+				var dateString = id.substring(me.config.dayIdPrefix.length);
+				var date = Date.parse(dateString);
+				
+				var oldStart = event.start;
+				var oldEnd = event.end;
+				
+				if (resizing.direction == 'start') {
+					event.start = date < resizing.end ? date : resizing.end.addDays(-1);
+				} else if (resizing.direction == 'end') {
+					event.end = date > resizing.start ? date.addDays(1) : resizing.start.addDays(1);
+				}
+
+				event.length = Math.round((event.end - event.start) / (1000 * 60 * 60 * 24));
+
+				if (event.start - oldStart != 0 || event.end - oldEnd != 0) {
+					me.eventLoader.updateEvent(event, oldStart, oldEnd);							
+				}
+
+			},
+			stop: function(e, ui) {
+				eventDOM.remove();
+				me.eventLoader.updateEvent(event);							
+
+				if (event.start - resizing.start != 0 || event.end - resizing.end != 0) {
+					// Update google event
+					var when = new google.gdata.When();
+					var startTime = new google.gdata.DateTime(event.start, true);
+					var endTime = new google.gdata.DateTime(event.end, true);
+					when.setStartTime(startTime);
+					when.setEndTime(endTime);
+					event.googleEvent.setTimes([when]);
+
+					event.googleEvent.updateEntry(function(response) {
+
+						console.log('Updated event!', arguments);
+						event.googleEvent = response.entry;
+						event.googleEvent.getSequence().setValue(event.googleEvent.getSequence().getValue() + 1);
+
+
+					}, function() {
+
+						console.log('Failed to update event :(', arguments);
+
+					});
+				}
+				
 			}
 		});
 		

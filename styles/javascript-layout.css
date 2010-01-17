@@ -247,6 +247,10 @@ body {
 	padding: 0;
 }
 
+.event.editing .ui-resizable-handle {
+	display: none;
+}
+
 .event.updating .text {
 	background-image: url(../images/ajax-loader.gif);
 	background-repeat: no-repeat;
@@ -305,4 +309,28 @@ body {
 	padding: 2px;
 	color: #fff;
 	cursor: pointer;
+}
+
+.event .ui-resizable-handle {
+	position: absolute;
+}
+
+.event  .ui-resizable-e {
+	height: 100%;
+	top: 0;
+	right: 1px;
+	width: 5px;
+	cursor: e-resize;
+}
+
+.event  .ui-resizable-w {
+	height: 100%;
+	top: 0;
+	left: 1px;
+	width: 5px;
+	cursor: w-resize;
+}
+
+.ui-resizable-helper {
+	display: none;
 }
