@@ -357,13 +357,15 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 		var dateString = id.substring(me.config.dayIdPrefix.length);
 		var date = Date.parse(dateString);
 		
+		// Create event in memory
 		var event = {
 			isNew: true,
 			summary: '',
 			calNumber: 1,
 			start: date,
 			end: date.addDays(1),
-			length: 1
+			length: 1,
+			editable: true
 		};
 				
 		me.eventLoader.addEvent(event);
