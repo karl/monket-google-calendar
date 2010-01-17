@@ -35,64 +35,6 @@ window.WeekCreator = function(config, dayHighlighter, eventLoader) {
 			
 		});
 		
-		$('.day', week).droppable({
-			hoverClass: 'ui-state-hover',
-			tolerance: 'pointer',
-			drop: function(ev, ui) {
-				// Get date from day
-				var id = $(this).attr('id');
-				var dateString = id.substring(me.config.dayIdPrefix.length);
-				var date = Date.parse(dateString);
-
-
-
-				var event = ui.draggable.data('event');
-				
-				if ((event.start - date) == 0) {
-					return;
-				}
-				
-				ui.draggable.draggable('option', 'revert', false);
-
-				var oldStart = event.start;
-				var oldEnd = event.end;
-				
-				event.start = date;
-				event.end = date.addDays(event.length);
-				
-				
-				// re-render affected weeks
-				me.eventLoader.updateEvent(event, oldStart, oldEnd);	
-
-
-
-
-				// Update google event
-				var when = new google.gdata.When();
-				var startTime = new google.gdata.DateTime(event.start, true);
-				var endTime = new google.gdata.DateTime(event.end, true);
-				when.setStartTime(startTime);
-				when.setEndTime(endTime);
-				event.googleEvent.setTimes([when]);
-
-				event.googleEvent.updateEntry(function(response) {
-
-					console.log('Updated event!', arguments);
-					event.googleEvent = response.entry;
-					event.googleEvent.getSequence().setValue(event.googleEvent.getSequence().getValue() + 1);
-				
-				
-				}, function() {
-
-					console.log('Failed to update event :(', arguments);
-				
-				});
-				
-				
-			}
-		});
-		
-		
 		return week;
 	};	
 };

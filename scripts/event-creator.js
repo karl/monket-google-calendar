@@ -29,24 +29,64 @@ window.EventCreator = function(eventLoader, colourMap, config) {
 			eventDOM.addClass('tentative');
 		}
 		
+		var dragging = {};
 		eventDOM.draggable({
 			revert: true,
 			distance: 10,
-			appendTo: $('#calendar'),
-			helper: 'clone',
+			helper: function() {
+				return $('<div>');
+			},
 			scroll: false,
 			cursor: 'move',
 			handle: $('.text', eventDOM),
 			start: function(ev, ui) {
-				console.log(arguments);
-				eventDOM.hide();
+				dragging.start = event.start;
+				dragging.end = event.end;
+			},
+			drag: function() {
+
+				var id = $('.day:hover').attr('id');
+				var dateString = id.substring(me.config.dayIdPrefix.length);
+				var date = Date.parse(dateString);
 				
-				ui.helper.width((event.length * 14.2857) + "%");			
-				ui.helper.addClass('start');
-				ui.helper.addClass('end');
+				var oldStart = event.start;
+				var oldEnd = event.end;
+
+				event.start = date;
+				event.end = date.addDays(event.length);
+
+				if (event.start - oldStart != 0 || event.end - oldEnd != 0) {
+					me.eventLoader.updateEvent(event, oldStart, oldEnd);							
+				}
+
+				
 			},
 			stop: function() {
-				eventDOM.show();
+
+				if (event.start - dragging.start != 0 || event.end - dragging.end != 0) {
+
+					// Update google event
+					var when = new google.gdata.When();
+					var startTime = new google.gdata.DateTime(event.start, true);
+					var endTime = new google.gdata.DateTime(event.end, true);
+					when.setStartTime(startTime);
+					when.setEndTime(endTime);
+					event.googleEvent.setTimes([when]);
+
+					event.googleEvent.updateEntry(function(response) {
+
+						console.log('Updated event!', arguments);
+						event.googleEvent = response.entry;
+						event.googleEvent.getSequence().setValue(event.googleEvent.getSequence().getValue() + 1);
+				
+				
+					}, function() {
+
+						console.log('Failed to update event :(', arguments);
+				
+					});
+				}
+
 			}
 		});
 

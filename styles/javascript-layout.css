@@ -331,6 +331,6 @@ body {
 	cursor: w-resize;
 }
 
-.ui-resizable-helper {
+.ui-resizable-helper, ui-draggable-dragging {
 	display: none;
 }
