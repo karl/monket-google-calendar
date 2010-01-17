@@ -216,7 +216,6 @@ body {
 	font-size: 12px;
 	line-height: 18px;
 	min-height: 18px;
-	text-shadow: #666 0px 0px 1px;
 	cursor: pointer;
 }
 
@@ -265,6 +264,7 @@ body {
 	opacity: 0.8;
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
 	margin-top: -1px;
+	line-height: 0px;
 }
 
 .editor textarea {
@@ -274,12 +274,14 @@ body {
 	padding: 0;
 	font-size: 12px;
 	line-height: 18px;
-	min-height: 18px;
+	min-height: 16px;
 	overflow-x: auto; 
 	overflow-y: hidden; 
 	opacity: 1;
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
 	color: #444;
+	resize: none;
+	outline: none;
 }
 
 
