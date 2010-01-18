@@ -29,6 +29,10 @@ window.EventCreator = function(eventLoader, colourMap, config) {
 			eventDOM.addClass('tentative');
 		}
 		
+		if (event.summary.endsWith('!')) {
+			eventDOM.addClass('important');
+		}
+		
 		if (event.editable) {
 			me.makeEditable(event, eventDOM);
 		}

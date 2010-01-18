@@ -134,6 +134,7 @@ body {
 
 #current-month-label {
 	position: absolute;
+	top: 1px;
 }
 
 #notification {
@@ -235,6 +236,11 @@ body {
 .event.tentative {
 	opacity: 0.5;	
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+}
+
+.event.important .inner {
+	-moz-box-shadow: 0 0 10px #DAA520;
+	-webkit-box-shadow: 0 0 10px #DAA520;
 }
 
 .event.editing.tentative {
