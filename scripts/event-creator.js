@@ -299,6 +299,7 @@ window.EventCreator = function(eventLoader, colourMap, config) {
 						
 						} else {
 
+							event.isNew = false;
 							me.createNewGoogleEvent(event, eventDOM);
 							
 						}
@@ -348,7 +349,6 @@ window.EventCreator = function(eventLoader, colourMap, config) {
 			$.log('Created event');
 			event.googleEvent = response.entry;
 			eventDOM.removeClass('updating');
-			event.isNew = false;
 			event.id = response.entry.getId();
 			
 		}, function() {
