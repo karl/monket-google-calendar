@@ -15,6 +15,13 @@ window.GoogleEventLoader = function(service, loading) {
 	    function(result) {
 			me.loading.hide();
 	        me.calendars = result.feed.entry;
+	
+			$.each(me.calendars, function(i, calendar) {
+				var accessValue = calendar.getAccessLevel().getValue(); 
+				calendar.editable = accessValue == google.gdata.calendar.AccessLevelProperty.VALUE_OWNER 
+					|| accessValue == google.gdata.calendar.AccessLevelProperty.VALUE_EDITOR;
+			});
+	
 			successCallback();
 	    },
 	    function failureCallback() {
@@ -37,7 +44,7 @@ window.GoogleEventLoader = function(service, loading) {
 	};
 	
 	me.getFeedUriForCalendar = function(calNumber) {
-		var calendar = me.calendars[calNumber - 1];
+		var calendar = me.calendars[calNumber];
 		var uri = calendar.getLink().href;
 		return uri;
 	};
@@ -201,18 +208,13 @@ window.GoogleEventLoader = function(service, loading) {
 					entryendDate = entrystartDate.addDays(length);
 				}
 
-				var accessValue = me.calendars[calNumber].getAccessLevel().getValue(); 
-				var editable = accessValue == google.gdata.calendar.AccessLevelProperty.VALUE_OWNER 
-					|| accessValue == google.gdata.calendar.AccessLevelProperty.VALUE_EDITOR;
-
 				var event = {};
-				event.id = entry.getId();
 				event.summary = $.trim(entry.getTitle().getText());
-				event.calNumber = calNumber + 1;
+				event.calNumber = calNumber;
 				event.start = entrystartDate;
 				event.end = entryendDate;
 				event.length = length;
-				event.editable = editable;
+				event.editable = me.calendars[calNumber].editable;
 				
 				event.googleEvent = entry;
 
@@ -225,7 +227,7 @@ window.GoogleEventLoader = function(service, loading) {
 			successCallback(results, startDate, endDate);
 		};
 		
-		var uri = me.getFeedUriForCalendar(calNumber + 1);
+		var uri = me.getFeedUriForCalendar(calNumber);
 
         var query = new google.gdata.calendar.CalendarEventQuery(uri);
 
@@ -263,8 +265,49 @@ window.GoogleEventLoader = function(service, loading) {
 		var feedUri = me.getFeedUriForCalendar(event.calNumber);
 		
 		// Submit the request using the calendar service object
-		me.service.insertEntry(feedUri, entry, successCallback, failureCallback, google.gdata.calendar.CalendarEventEntry);		
+		me.service.insertEntry(feedUri, entry, function(response) {
+			event.googleEvent = response.entry;
+			successCallback();
+		}, function() {
+			failureCallback();
+		}, google.gdata.calendar.CalendarEventEntry);		
 	};
+
+	me.saveChanges = function(event, success, failure) {
+		event.googleEvent.updateEntry(function(response) {
+			event.googleEvent = response.entry;
+			success(response);
+		}, function(response) {
+			failure(response);
+		});	
+	};
+	
+	me.moveToNewCalendar = function(event, oldCalNumber, success, failure) {
+		// Insert the entry into the new calendar
+		// then if successful remove it from the old calendar
+		
+		var feedUri = me.getFeedUriForCalendar(event.calNumber);
+		me.service.insertEntry(feedUri, event.googleEvent, function(response) {
+
+			var newGoogleEvent = response.entry;
+			
+			event.googleEvent.deleteEntry(function(response) {
+				
+				event.googleEvent = newGoogleEvent;
+				event.googleEvent.getSequence().setValue(event.googleEvent.getSequence().getValue() + 1);
+
+				success(response);
+				
+			}, function(response) {
+				failure(response);
+			});
+			
+		}, function(response) {
+			failure(response);
+		}, google.gdata.calendar.CalendarEventEntry);		
+	};
+
+
 	
 	me.addEvent = function(event) {
 		var startDate = event.start;

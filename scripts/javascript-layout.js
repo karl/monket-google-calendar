@@ -42,7 +42,7 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 		document.onselectstart = function () { return false; };
 
 		$(window).resize(function() {
-			me.scrollToWeekStarting(me.topWeekStartDate);
+			// me.scrollToWeekStarting(me.topWeekStartDate);
 		});
 
 		$(document).keydown(function(e) {
@@ -361,7 +361,7 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 		var event = {
 			isNew: true,
 			summary: '',
-			calNumber: 1,
+			calNumber: 0,
 			start: date,
 			end: date.addDays(1),
 			length: 1,
