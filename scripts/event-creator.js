@@ -10,8 +10,8 @@ window.EventCreator = function(eventLoader, colourMap, config) {
 		eventDOM.data('event', event);
 
 		$(".text", eventDOM).text(event.summary);
-		if (event.length > 1) {
-			eventDOM.addClass("multi-day");
+		if (!(event.isStart && event.isEnd)) {
+			eventDOM.addClass("multi-week");
 		}
 		if (event.isStart) {
 			eventDOM.addClass('start');

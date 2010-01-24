@@ -227,7 +227,7 @@ body {
 	cursor: inherit;
 }
 
-.event.multi-day .text {
+.event.multi-week .text {
 	height: 18px;
 	white-space: nowrap;
 	overflow: hidden;

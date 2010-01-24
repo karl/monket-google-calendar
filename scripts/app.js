@@ -8,7 +8,6 @@ google.setOnLoadCallback(function() {
     
 	notification.show('Checking Google Calendar access');
     if (google.accounts.user.checkLogin(scope)) {
-
 		var myService = new google.gdata.calendar.CalendarService('monket-calendar-2');
 		var googleEventLoader = new GoogleEventLoader(myService, loading);
 		

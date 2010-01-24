@@ -1,12 +1,14 @@
 Next:
 
 Bugs
+* Clicking on a second event while editing leaves first one editing
 * Can't move back to a calendar that event was deleted from
 * Recalculate event positions on resize
 * Recalculate week top on resize
 * Fix dragging over the year boundary
 
 Enhancements
+* Alter the cookies so they no longer expire at the end of the session
 * Faster loading
 * Have a link that scrolls you straight to today
 * Error notifications

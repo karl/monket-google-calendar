@@ -125,10 +125,11 @@ function EventLayoutManager(config, eventCreator) {
 			event.weekStart = (event.start < weekDate) ? weekDate : event.start;
 			event.weekEnd = (event.end > weekDate.addWeeks(1)) ? weekDate.addWeeks(1) : event.end;
 			event.weekLength = Math.round((event.weekEnd.getTime() - event.weekStart.getTime()) / (1000 * 60 * 60 * 24));
-			event.requiredLines = event.length == 1 ? me.getRequiredLines(event) : 1;
 			
 			event.isStart = (event.start >= weekDate);
 			event.isEnd = (event.end <= weekDate.addWeeks(1));
+
+			event.requiredLines = (event.isStart && event.isEnd) ? me.getRequiredLines(event) : 1;
 			
 			preppedEvents[preppedEvents.length] = event;
 		}
