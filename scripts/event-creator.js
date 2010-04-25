@@ -68,7 +68,7 @@ window.EventCreator = function(eventLoader, colourMap, config) {
 				if (dragging.day) {
  					var id = dragging.day.attr('id');
 					var dateString = id.substring(me.config.dayIdPrefix.length);
-					var date = Date.parse(dateString);
+					var date = Date.parseYMD(dateString);
 				
 					var oldStart = event.start;
 					var oldEnd = event.end;
@@ -144,7 +144,7 @@ window.EventCreator = function(eventLoader, colourMap, config) {
 					if (resizing.day) {
 						var id = resizing.day.attr('id');
 						var dateString = id.substring(me.config.dayIdPrefix.length);
-						var date = Date.parse(dateString);
+						var date = Date.parseYMD(dateString);
 
 						var oldStart = event.start;
 						var oldEnd = event.end;

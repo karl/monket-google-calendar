@@ -1,12 +1,9 @@
-window.Loading = function() {
-	var me = this;
-	
-	me.show = function(text) {
-		$("#loading").fadeIn();
-	};
-
-	me.hide = function() {
-		$("#loading").fadeOut();
-	};
-	
-};
+(function(){
+  window.Loading = function Loading() {  };
+  window.Loading.prototype.show = function show(text) {
+    return $("#loading").fadeIn();
+  };
+  window.Loading.prototype.hide = function hide() {
+    return $("#loading").fadeOut();
+  };
+})();

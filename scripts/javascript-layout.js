@@ -111,7 +111,7 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 		// Work out the start date (either today or a date given on the location hash)
 		var startDate = me.getTodaysDate().addWeeks(-1);		
 		try {
-			startDate = Date.parse(location.hash.substring(1));
+			startDate = Date.parseYMD(location.hash.substring(1));
 		} catch (exception) {
 			$.log("Unable to parse location hash to date: " + location.hash + ", exception: " + exception);
 		}
@@ -260,7 +260,7 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 	
 	me.weekIdToDate = function(id) {
 		dateString = id.substring(me.config.weekIdPrefix.length);
-		return Date.parse(dateString);
+		return Date.parseYMD(dateString);
 	};
 	
 	me.getWeekStartDate = function(date) {
@@ -355,7 +355,7 @@ function Calendar(config, eventLoader, notification, eventLayoutManager, weekCre
 		
 		var id = $(e.target).attr('id');
 		var dateString = id.substring(me.config.dayIdPrefix.length);
-		var date = Date.parse(dateString);
+		var date = Date.parseYMD(dateString);
 		
 		// Create event in memory
 		var event = {

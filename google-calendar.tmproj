@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>scripts/event-creator.js</string>
+	<string>scripts/test.coffee</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -93,7 +93,7 @@
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>278</integer>
+			<integer>0</integer>
 		</dict>
 		<key>scripts/eventLayoutManager.js</key>
 		<dict>
@@ -167,6 +167,36 @@
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
 		</dict>
+		<key>scripts/test.coffee</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>3</integer>
+				<key>line</key>
+				<integer>2</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>0</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>3</integer>
+				<key>line</key>
+				<integer>2</integer>
+			</dict>
+		</dict>
 		<key>scripts/week-creator.js</key>
 		<dict>
 			<key>caret</key>
@@ -220,6 +250,7 @@
 		<string>scripts/notification.js</string>
 		<string>scripts/event-creator.js</string>
 		<string>scripts/app.js</string>
+		<string>scripts/test.coffee</string>
 		<string>styles/javascript-layout.css</string>
 		<string>scripts/eventLayoutManager.js</string>
 		<string>scripts/javascript-layout.js</string>
