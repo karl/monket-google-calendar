@@ -1,9 +1,4 @@
 (function(){
-  var __slice = Array.prototype.slice, __bind = function(func, obj, args) {
-    return function() {
-      return func.apply(obj || {}, args ? args.concat(__slice.call(arguments, 0)) : arguments);
-    };
-  };
   window.EventLayoutManager = function EventLayoutManager(config, eventCreator) {
     this.config = config;
     this.eventCreator = eventCreator;
@@ -48,16 +43,18 @@
   // We see if we can fit the event in the grid
   // If we can, then we mark those cells in the grid as used
   window.EventLayoutManager.prototype.layoutEventsForWeek = function layoutEventsForWeek(weekDate, events) {
-    var preppedEvents, week;
+    var _a, _b, _c, _d, event, preppedEvents, week;
     this.getConstants();
     this.initLayoutGridForWeek(weekDate);
     preppedEvents = this.prepareEvents(weekDate, events);
     week = $("#" + this.config.weekIdPrefix + weekDate.customFormat(this.config.dateFormat));
     $('.event', week).remove();
-    // foreach event
-    return $.each(preppedEvents, __bind(function(i, event) {
-        return this.placeEvent(event);
-      }, this));
+    _a = []; _c = preppedEvents;
+    for (_b = 0, _d = _c.length; _b < _d; _b++) {
+      event = _c[_b];
+      _a.push(this.placeEvent(event));
+    }
+    return _a;
     // TODO: Have 'show more' link appear if more events than will fit in a day
     // foreach day
     //   if show-more count > 0

@@ -14,20 +14,20 @@ class window.WeekCreator
 			@config.dayIdPrefix + weekStart.addDays(index).customFormat(@config.dateFormat);
 		
 		# Set the day label for each day, e.g. '12'
-		$(".day-label", week).each (index) =>
+		$(".day-label", week).each (index, day_label) =>
 			dayDate: weekStart.addDays index
 			dayNumber: dayDate.customFormat "#D#"
 
 			# If this is the first day in the month then add a month label, e.g. 'February'
-			$(this).html dayNumber
+			$(day_label).html dayNumber
 			if dayNumber == "1"
 				monthLabel: $("#templates .month-label").clone().html dayDate.customFormat("#MMMM#")
-				$(this).after monthLabel
-				$(this).parent().addClass "start-month"
+				$(day_label).after monthLabel
+				$(day_label).parent().addClass "start-month"
 			
 			# if the this is todays date then highlight it
 			if dayDate.customFormat(@config.dateFormat) == new Date().customFormat(@config.dateFormat)
-				@dayHighlighter.highlightDay $(this).parent()
+				@dayHighlighter.highlightDay $(day_label).parent()
 			
 		return week
 

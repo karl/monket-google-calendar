@@ -53,9 +53,8 @@ class window.EventLayoutManager
 		week: $("#" + @config.weekIdPrefix + weekDate.customFormat(@config.dateFormat))
 		$('.event', week).remove()
 			
-		# foreach event
-		$.each preppedEvents, (i, event) =>
-			@placeEvent(event);
+		for event in preppedEvents
+			@placeEvent event
 	
 		# TODO: Have 'show more' link appear if more events than will fit in a day
 		# foreach day
@@ -71,7 +70,7 @@ class window.EventLayoutManager
 			eventDOM.css({ 
 				top: (startLine + 1) * @lineHeight
 			})
-			eventDOM.appendTo($("#" + @config.dayIdPrefix + event.weekStart.customFormat(@config.dateFormat)))
+			eventDOM.appendTo $("#" + @config.dayIdPrefix + event.weekStart.customFormat(@config.dateFormat))
 			
 			@markLayoutSpaceAsUsed event, startLine
 		else

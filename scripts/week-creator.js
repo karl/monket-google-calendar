@@ -20,20 +20,20 @@
         return this.config.dayIdPrefix + weekStart.addDays(index).customFormat(this.config.dateFormat);
       }, this));
     // Set the day label for each day, e.g. '12'
-    $(".day-label", week).each(__bind(function(index) {
+    $(".day-label", week).each(__bind(function(index, day_label) {
         var dayDate, dayNumber, monthLabel;
         dayDate = weekStart.addDays(index);
         dayNumber = dayDate.customFormat("#D#");
         // If this is the first day in the month then add a month label, e.g. 'February'
-        $(this).html(dayNumber);
+        $(day_label).html(dayNumber);
         if (dayNumber === "1") {
           monthLabel = $("#templates .month-label").clone().html(dayDate.customFormat("#MMMM#"));
-          $(this).after(monthLabel);
-          $(this).parent().addClass("start-month");
+          $(day_label).after(monthLabel);
+          $(day_label).parent().addClass("start-month");
         }
         // if the this is todays date then highlight it
         if (dayDate.customFormat(this.config.dateFormat) === new Date().customFormat(this.config.dateFormat)) {
-          return this.dayHighlighter.highlightDay($(this).parent());
+          return this.dayHighlighter.highlightDay($(day_label).parent());
         }
       }, this));
     return week;
