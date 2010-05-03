@@ -239,8 +239,8 @@ body {
 }
 
 .event.important .inner {
-	-moz-box-shadow: 0 0 10px #DAA520;
-	-webkit-box-shadow: 0 0 10px #DAA520;
+	-moz-box-shadow: 0 0 5px #DAA520;
+	-webkit-box-shadow: 0 0 5px #DAA520;
 }
 
 .event.editing, .event.editing.tentative {
