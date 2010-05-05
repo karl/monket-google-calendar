@@ -68,6 +68,7 @@ class window.Calendar
 		$('#body').mousemove (e) =>
 			delta: -(e.pageY - startY)
 			
+			weeks: delta / 50
 			weeks: if delta > 0 then Math.floor(weeks) else Math.ceil(weeks)
 			
 			newWeek: startWeekDate.addWeeks weeks
@@ -107,7 +108,7 @@ class window.Calendar
 		@createWeekElementsAsRequired weekDate.addWeeks(-2)
 		@createWeekElementsAsRequired weekDate.addWeeks(6)
 				
-		if @scrollingStartTime == null
+		if !@scrollingStartTime?
 			@scrollingStartTime: new Date()
 			@scrollingStartWeek: @topWeekStartDate
 				
@@ -133,7 +134,7 @@ class window.Calendar
 		
 		duration: if immediate then 0 else 200
 		
-		$("#body").scrollTo(@topWeek, duration, {easing : 'easeOutQuad', onAfter : ( => @finishedScrolling ), offset: {top: offset} })
+		$("#body").scrollTo(@topWeek, duration, {easing : 'easeOutQuad', onAfter : ( => @finishedScrolling() ), offset: {top: offset} })
 	
 	setURLHash: ->
 		location.hash: @topWeekStartDate.customFormat @config.dateFormat
@@ -186,6 +187,8 @@ class window.Calendar
 		startDate: @getWeekStartDate startDate
 		firstWeek: startDate.addWeeks(-2)
 		
+		@topWeekStartDate: startDate.addWeeks(-1)
+
 		# Create weeks for the first year surrounding the start date, and add them to the calendar body
 		@createWeek(firstWeek.addWeeks(i)).appendTo($("#body")) for i in [0...8]
 		

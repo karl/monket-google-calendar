@@ -90,6 +90,7 @@
     return $('#body').mousemove(__bind(function(e) {
         var delta, newWeek, weeks;
         delta = -(e.pageY - startY);
+        weeks = delta / 50;
         weeks = delta > 0 ? Math.floor(weeks) : Math.ceil(weeks);
         newWeek = startWeekDate.addWeeks(weeks);
         if (newWeek - this.topWeekStartDate !== 0) {
@@ -124,13 +125,13 @@
     // prevent default scolling behaviour
   };
   window.Calendar.prototype.scrollToWeekStarting = function scrollToWeekStarting(date, offset, immediate) {
-    var duration, weekDate;
+    var _a, duration, weekDate;
     clearTimeout(this.finishedScrollingTimeout);
     weekDate = this.getWeekStartDate(date);
     // Preload week elements as we near the edge of the currently loaded weeks
     this.createWeekElementsAsRequired(weekDate.addWeeks(-2));
     this.createWeekElementsAsRequired(weekDate.addWeeks(6));
-    if (this.scrollingStartTime === null) {
+    if (!(typeof (_a = this.scrollingStartTime) !== "undefined" && _a !== null)) {
       this.scrollingStartTime = new Date();
       this.scrollingStartWeek = this.topWeekStartDate;
     }
@@ -150,7 +151,7 @@
     return $("#body").scrollTo(this.topWeek, duration, {
       easing: 'easeOutQuad',
       onAfter: (__bind(function() {
-          return this.finishedScrolling;
+          return this.finishedScrolling();
         }, this)),
       offset: {
         top: offset
@@ -216,6 +217,7 @@
     var _a, _b, _c, firstWeek, i;
     startDate = this.getWeekStartDate(startDate);
     firstWeek = startDate.addWeeks(-2);
+    this.topWeekStartDate = startDate.addWeeks(-1);
     // Create weeks for the first year surrounding the start date, and add them to the calendar body
     _b = 0; _c = 8;
     for (_a = 0, i = _b; (_b <= _c ? i < _c : i > _c); (_b <= _c ? i += 1 : i -= 1), _a++) {
