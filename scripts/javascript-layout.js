@@ -214,13 +214,13 @@
     return $("#current-month-label").text(this.topWeekStartDate.customFormat("#MMMM#"));
   };
   window.Calendar.prototype.buildWeeks = function buildWeeks(startDate) {
-    var _a, _b, _c, firstWeek, i;
+    var _a, _b, firstWeek, i;
     startDate = this.getWeekStartDate(startDate);
     firstWeek = startDate.addWeeks(-2);
     this.topWeekStartDate = startDate.addWeeks(-1);
     // Create weeks for the first year surrounding the start date, and add them to the calendar body
-    _b = 0; _c = 8;
-    for (_a = 0, i = _b; (_b <= _c ? i < _c : i > _c); (_b <= _c ? i += 1 : i -= 1), _a++) {
+    _a = 0; _b = 8;
+    for (i = _a; (_a <= _b ? i < _b : i > _b); (_a <= _b ? i += 1 : i -= 1)) {
       this.createWeek(firstWeek.addWeeks(i)).appendTo($("#body"));
     }
     // Scroll to the start date

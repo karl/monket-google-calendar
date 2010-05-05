@@ -77,25 +77,19 @@
     }
   };
   window.EventLayoutManager.prototype.initLayoutGridForWeek = function initLayoutGridForWeek(weekDate) {
-    var _a, day, index, row;
+    var _a, _b, _c, _d, day, index, row;
     // initialise layoutGrid array
     this.layoutGrid = [];
-    row = 0;
-    _a = [];
-    while (row < this.linesPerDay) {
-      _a.push((function() {
-        this.layoutGrid[row] = {};
-        day = 0;
-        while (day < 7) {
-          index = weekDate.addDays(day);
-          this.layoutGrid[row][index] = 0;
-          day++;
-        }
-        row++;
-        return null;
-      }).call(this));
+    _a = 0; _b = this.linesPerDay;
+    for (row = _a; (_a <= _b ? row < _b : row > _b); (_a <= _b ? row += 1 : row -= 1)) {
+      this.layoutGrid[row] = {};
+      _c = 0; _d = 6;
+      for (day = _c; (_c <= _d ? day <= _d : day >= _d); (_c <= _d ? day += 1 : day -= 1)) {
+        index = weekDate.addDays(day);
+        this.layoutGrid[row][index] = 0;
+      }
     }
-    return _a;
+    return null;
   };
   window.EventLayoutManager.prototype.prepareEvents = function prepareEvents(weekDate, events) {
     var _a, _b, _c, event, preppedEvents;
@@ -126,23 +120,21 @@
     return Math.ceil(textEl.outerHeight() / this.lineHeight);
   };
   window.EventLayoutManager.prototype.findLineForEvent = function findLineForEvent(event) {
-    var date, i, isSpace, j;
-    i = 0;
-    while (i <= this.layoutGrid.length - event.requiredLines) {
+    var _a, _b, _c, _d, date, i, isSpace, j;
+    _a = 0; _b = this.layoutGrid.length - event.requiredLines;
+    for (i = _a; (_a <= _b ? i <= _b : i >= _b); (_a <= _b ? i += 1 : i -= 1)) {
       isSpace = 0;
-      j = i;
-      while (j < i + event.requiredLines) {
+      _c = i; _d = i + event.requiredLines;
+      for (j = _c; (_c <= _d ? j < _d : j > _d); (_c <= _d ? j += 1 : j -= 1)) {
         date = event.weekStart;
         while (date < event.weekEnd) {
           isSpace += this.layoutGrid[j][date];
           date = date.addDays(1);
         }
-        j++;
       }
       if (isSpace === 0) {
         return i;
       }
-      i++;
     }
     return null;
   };

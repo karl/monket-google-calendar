@@ -81,17 +81,14 @@ class window.EventLayoutManager
 		# initialise layoutGrid array
 		@layoutGrid: []
 
-		row: 0
-		while row < @linesPerDay
+		for row in [0...@linesPerDay]
 			@layoutGrid[row]: {}
 
-			day: 0
-			while day < 7
+			for day in [0..6]
 				index: weekDate.addDays day
 				@layoutGrid[row][index]: 0
-				day++
-			row++
-			null
+
+		null
 
 	prepareEvents: (weekDate, events) ->
 		# convert the events object to an array so we can sort it
@@ -125,19 +122,18 @@ class window.EventLayoutManager
 
 	findLineForEvent: (event) ->
 
-		i: 0
-		while i <= @layoutGrid.length - event.requiredLines
+		for i in [0..@layoutGrid.length - event.requiredLines]
 			isSpace: 0
-			j: i
-			while j < i + event.requiredLines
+			
+			for j in [i...i + event.requiredLines]
 				date: event.weekStart
 				while date < event.weekEnd
 					isSpace += @layoutGrid[j][date]
 					date: date.addDays 1
-				j++
+
 			return i if isSpace == 0
-			i++
-		return null;
+
+		null
 
 	markLayoutSpaceAsUsed: (event, startLine) ->
 		j: startLine

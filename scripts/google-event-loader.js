@@ -49,7 +49,7 @@
     return calendar.getLink().href;
   };
   window.GoogleEventLoader.prototype.load = function load(startDate, endDate, successCallback, failureCallback) {
-    var _a, _b, _c, _d, cacheEndDate, cacheStartDate, i;
+    var _a, _b, _c, cacheEndDate, cacheStartDate, i;
     // // if (me.offlineCache && me.datesInOfflineCache(startDate, endDate)) {
     // //	successCallback(me.getOfflineCachedEvents(startDate, endDate), startDate, endDate);
     // // }
@@ -67,8 +67,8 @@
       };
       this.loading.show();
       this.addCallbacks(startDate, endDate, successCallback, failureCallback);
-      _a = []; _c = 0; _d = this.calendars.length;
-      for (_b = 0, i = _c; (_c <= _d ? i < _d : i > _d); (_c <= _d ? i += 1 : i -= 1), _b++) {
+      _a = []; _b = 0; _c = this.calendars.length;
+      for (i = _b; (_b <= _c ? i < _c : i > _c); (_b <= _c ? i += 1 : i -= 1)) {
         _a.push(this.loadFromGoogle(cacheStartDate, cacheEndDate, (__bind(function(entries) {
             var cacheInfo;
             cacheInfo = this.cache[this.getCacheKey(startDate)];
@@ -279,12 +279,12 @@
     return this.updateEventHook(event, oldStart, oldEnd);
   };
   window.GoogleEventLoader.prototype.removeEvent = function removeEvent(event) {
-    var _a, _b, _c, cacheEntries, cacheInfo, entry, i, startDate;
+    var _a, _b, cacheEntries, cacheInfo, entry, i, startDate;
     startDate = event.start;
     cacheInfo = this.cache[this.getCacheKey(startDate)];
     cacheEntries = cacheInfo.entries;
-    _b = 0; _c = cacheEntries.length;
-    for (_a = 0, i = _b; (_b <= _c ? i < _c : i > _c); (_b <= _c ? i += 1 : i -= 1), _a++) {
+    _a = 0; _b = cacheEntries.length;
+    for (i = _a; (_a <= _b ? i < _b : i > _b); (_a <= _b ? i += 1 : i -= 1)) {
       entry = cacheEntries[i];
       if (this.eventsAreEqual(event, entry)) {
         Array.remove(cacheEntries, i);

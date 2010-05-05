@@ -18,7 +18,7 @@ class window.EventCreator
 		eventDOM.addClass 'end' if event.isEnd
 		eventDOM.addClass 'tentative' if event.summary.endsWith('?')
 		eventDOM.addClass 'important' if event.summary.endsWith('!')
-		eventDOM.addClass'new' if event.isNew
+		eventDOM.addClass 'new' if event.isNew
 
 		@setColour eventDOM, event.calNumber
 		@makeEditable event, eventDOM if event.editable
