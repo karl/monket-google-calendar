@@ -14,9 +14,9 @@ class window.EventLayoutManager
 		@recalculateConstants: true
 		
 		clearTimeout @resizeTimeout
-		@resizeTimeout: setTimeout(( ->
+		@resizeTimeout: setTimeout ->
 			console.log 're-layout weeks'
-		), 500)
+		, 500
 		
 	# only recaculate constants if they need redefining (e.g. first layout or browser resize)
 	getConstants: ->
@@ -53,8 +53,8 @@ class window.EventLayoutManager
 		week: $("#" + @config.weekIdPrefix + weekDate.customFormat(@config.dateFormat))
 		$('.event', week).remove()
 			
-		for event in preppedEvents
-			@placeEvent event
+		@placeEvent event for event in preppedEvents
+			
 	
 		# TODO: Have 'show more' link appear if more events than will fit in a day
 		# foreach day
@@ -66,7 +66,7 @@ class window.EventLayoutManager
 
 		# Now attempt to find a line where we can place the event
 		startLine: @findLineForEvent event
-		if startLine != null
+		if startLine?
 			eventDOM.css({ 
 				top: (startLine + 1) * @lineHeight
 			})
@@ -105,7 +105,7 @@ class window.EventLayoutManager
 
 			event.requiredLines: if event.isStart && event.isEnd then @getRequiredLines(event) else 1
 			
-			preppedEvents[preppedEvents.length]: event
+			preppedEvents.push event
 
 		# order events by num of days, then by text length
 		preppedEvents.sort @eventSort
@@ -117,7 +117,7 @@ class window.EventLayoutManager
 		textEl: $("#layout-event .text")
 		
 		textEl.text(text)
-		$("#layout-event").width((event.weekLength * 14.2857) + "%")
+		$("#layout-event").width (event.weekLength * 14.2857) + "%"
 		return Math.ceil(textEl.outerHeight() / @lineHeight)
 
 	findLineForEvent: (event) ->
@@ -136,14 +136,13 @@ class window.EventLayoutManager
 		null
 
 	markLayoutSpaceAsUsed: (event, startLine) ->
-		j: startLine
-		while j < (startLine + event.requiredLines)
+		for j in [startLine...startLine + event.requiredLines]
 			date: event.weekStart
 			while date < event.weekEnd
 				@layoutGrid[j][date]: 1
 				date: date.addDays 1
-			j++
-			null
+
+		null
 
 	# order events by week length, then by text length
 	eventSort: (eventA, eventB) ->

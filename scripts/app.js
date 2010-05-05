@@ -9,7 +9,7 @@
     if (google.accounts.user.checkLogin(scope)) {
       myService = new google.gdata.calendar.CalendarService("monket-calendar-2");
       googleEventLoader = new GoogleEventLoader(myService, loading);
-      return googleEventLoader.init((function() {
+      return googleEventLoader.init(function() {
         var calendar, colourMap, config, dayHighlighter, eventCreator, eventLayoutManager, weekCreator;
         colourMap = ColourMap;
         config = new MonketCalendarConfig();
@@ -19,7 +19,7 @@
         eventLayoutManager = new EventLayoutManager(config, eventCreator);
         calendar = new Calendar(config, googleEventLoader, notification, eventLayoutManager, weekCreator, dayHighlighter);
         return calendar;
-      }), function() {
+      }, function() {
         return notification.show("Unable to load Google Calendars");
       });
     } else {

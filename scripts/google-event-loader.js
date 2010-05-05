@@ -15,7 +15,7 @@
   };
   window.GoogleEventLoader.prototype.init = function init(successCallback, failureCallback) {
     this.loading.show();
-    return this.service.getAllCalendarsFeed('http://www.google.com/calendar/feeds/default/allcalendars/full', (__bind(function(result) {
+    return this.service.getAllCalendarsFeed('http://www.google.com/calendar/feeds/default/allcalendars/full', __bind(function(result) {
         var _a, _b, _c, accessValue, calendar;
         this.loading.hide();
         this.calendars = result.feed.entry;
@@ -26,7 +26,7 @@
           calendar.editable = accessValue === google.gdata.calendar.AccessLevelProperty.VALUE_OWNER || accessValue === google.gdata.calendar.AccessLevelProperty.VALUE_EDITOR;
         }
         return successCallback();
-      }, this)), __bind(function() {
+      }, this), __bind(function() {
         this.loading.hide();
         return failureCallback();
       }, this));
@@ -69,7 +69,7 @@
       this.addCallbacks(startDate, endDate, successCallback, failureCallback);
       _a = []; _b = 0; _c = this.calendars.length;
       for (i = _b; (_b <= _c ? i < _c : i > _c); (_b <= _c ? i += 1 : i -= 1)) {
-        _a.push(this.loadFromGoogle(cacheStartDate, cacheEndDate, (__bind(function(entries) {
+        _a.push(this.loadFromGoogle(cacheStartDate, cacheEndDate, __bind(function(entries) {
             var cacheInfo;
             cacheInfo = this.cache[this.getCacheKey(startDate)];
             cacheInfo.remaining--;
@@ -82,7 +82,7 @@
             // // if (localStorage) {
             // //	localStorage.offlineCache = JSON.stringify(me.cache);
             // // }
-          }, this)), (__bind(function() {
+          }, this), __bind(function() {
             var cacheInfo;
             cacheInfo = this.cache[this.getCacheKey(startDate)];
             cacheInfo.remaining--;
@@ -91,7 +91,7 @@
               this.clearCallbacks(cacheInfo);
               return this.loading.hide();
             }
-          }, this)), i));
+          }, this), i));
       }
       return _a;
     }
@@ -191,14 +191,15 @@
             (endTime - endDate) > 0 ? length++ : null;
             entryendDate = entrystartDate.addDays(length);
           }
-          event = {};
-          event.summary = $.trim(entry.getTitle().getText());
-          event.calNumber = calNumber;
-          event.start = entrystartDate;
-          event.end = entryendDate;
-          event.length = length;
-          event.editable = this.calendars[calNumber].editable;
-          event.googleEvent = entry;
+          event = {
+            summary: $.trim(entry.getTitle().getText()),
+            calNumber: calNumber,
+            start: entrystartDate,
+            end: entryendDate,
+            length: length,
+            editable: this.calendars[calNumber].editable,
+            googleEvent: entry
+          };
           if (entryendDate > startDate) {
             results.push(event);
           }
@@ -234,18 +235,18 @@
     entry.addTime(google_when);
     feedUri = this.getFeedUriForCalendar(event.calNumber);
     // Submit the request using the calendar service object
-    return this.service.insertEntry(feedUri, entry, (__bind(function(response) {
+    return this.service.insertEntry(feedUri, entry, __bind(function(response) {
         event.googleEvent = response.entry;
         return successCallback();
-      }, this)), (__bind(function() {
+      }, this), __bind(function() {
         return failureCallback();
-      }, this)), google.gdata.calendar.CalendarEventEntry);
+      }, this), google.gdata.calendar.CalendarEventEntry);
   };
   window.GoogleEventLoader.prototype.saveChanges = function saveChanges(event, success, failure) {
-    return event.googleEvent.updateEntry((__bind(function(response) {
+    return event.googleEvent.updateEntry(__bind(function(response) {
         event.googleEvent = response.entry;
         return success(response);
-      }, this)), __bind(function(response) {
+      }, this), __bind(function(response) {
         return failure(response);
       }, this));
   };
@@ -254,19 +255,19 @@
     // Insert the entry into the new calendar
     // then if successful remove it from the old calendar
     feedUri = this.getFeedUriForCalendar(event.calNumber);
-    return this.service.insertEntry(feedUri, event.googleEvent, (__bind(function(response) {
+    return this.service.insertEntry(feedUri, event.googleEvent, __bind(function(response) {
         var newGoogleEvent;
         newGoogleEvent = response.entry;
-        return event.googleEvent.deleteEntry((__bind(function(response) {
+        return event.googleEvent.deleteEntry(__bind(function(response) {
             event.googleEvent = newGoogleEvent;
             event.googleEvent.getSequence().setValue(event.googleEvent.getSequence().getValue() + 1);
             return success(response);
-          }, this)), __bind(function(response) {
+          }, this), __bind(function(response) {
             return failure(response);
           }, this));
-      }, this)), (__bind(function(response) {
+      }, this), __bind(function(response) {
         return failure(response);
-      }, this)), google.gdata.calendar.CalendarEventEntry);
+      }, this), google.gdata.calendar.CalendarEventEntry);
   };
   window.GoogleEventLoader.prototype.addEvent = function addEvent(event) {
     var cacheInfo, startDate;

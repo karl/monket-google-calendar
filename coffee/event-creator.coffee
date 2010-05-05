@@ -64,11 +64,11 @@ class window.EventCreator
 				event_when.setEndTime(endTime)
 				event.googleEvent.setTimes([event_when])
 
-				event.googleEvent.updateEntry ((response) =>
+				event.googleEvent.updateEntry (response) =>
 					console.log('Updated event!', arguments)
 					event.googleEvent: response.entry
 					event.googleEvent.getSequence().setValue(event.googleEvent.getSequence().getValue() + 1)
-				), =>
+				, =>
 					console.log('Failed to update event :(', arguments)
 		
 		eventDOM.draggable {
@@ -131,15 +131,15 @@ class window.EventCreator
 				google_when: new google.gdata.When()
 				startTime: new google.gdata.DateTime(event.start, true)
 				endTime: new google.gdata.DateTime(event.end, true)
-				google_when.setStartTime(startTime)
-				google_when.setEndTime(endTime)
-				event.googleEvent.setTimes([google_when])
+				google_when.setStartTime startTime
+				google_when.setEndTime endTime
+				event.googleEvent.setTimes [google_when]
 
-				event.googleEvent.updateEntry ((response) ->
+				event.googleEvent.updateEntry (response) ->
 					console.log('Updated event!', arguments)
 					event.googleEvent: response.entry
 					event.googleEvent.getSequence().setValue(event.googleEvent.getSequence().getValue() + 1)
-				), ->
+				, ->
 					console.log('Failed to update event :(', arguments)
 		
 		if event.isStart || event.isEnd
@@ -203,10 +203,10 @@ class window.EventCreator
 			removeEditor()
 			
 			if event.googleEvent
-				event.googleEvent.deleteEntry ( =>
+				event.googleEvent.deleteEntry =>
 					$.log('Deleted event', arguments)
 					@removeEvent(event, eventDOM)
-				), ->
+				, ->
 					$.log('Failed to delete event', arguments)
 					eventDOM.removeClass('updating')
 					eventDOM.addClass('error')
@@ -242,10 +242,10 @@ class window.EventCreator
 						event.googleEvent.setTitle(google.gdata.Text.create(text))
 
 						if event.calNumber != startCalNumber
-							@eventLoader.moveToNewCalendar event, startCalNumber, ( ->
+							@eventLoader.moveToNewCalendar event, startCalNumber, ->
 								$.log('Updated event', arguments)
 								eventDOM.removeClass('updating')
-							), (response) ->
+							, (response) ->
 								console.log(response)
 								
 								# TODO: reset event
@@ -254,10 +254,10 @@ class window.EventCreator
 								eventDOM.addClass('error')
 
 						else
-							@eventLoader.saveChanges event, ( ->
+							@eventLoader.saveChanges event, ->
 								$.log('Updated event', arguments)
 								eventDOM.removeClass('updating')
-							), ->
+							, ->
 								# TODO: reset event
 								$.log('Failed to update event :(', arguments)
 								eventDOM.removeClass('updating')
@@ -285,14 +285,14 @@ class window.EventCreator
 		$('textarea', editor).keypress (e) ->
 			e.preventDefault() if e.keyCode == 13
 
-		setTimeout ( ->
+		setTimeout ->
 			$(delButton).click (e) ->
 				deleteEvent()
 				e.stopPropagation()
 
 			$('body').click(removeEditor)
 			$("#body").mousewheel(removeEditor)
-		), 0
+		, 0
 
 	getCalendarPicker: (event, eventDOM) ->
 		# Build calendar picker
@@ -333,10 +333,10 @@ class window.EventCreator
 		$('.inner', eventDOM).css('background-color', @colourMap[color])
 
 	createNewGoogleEvent: (event, eventDOM) ->
-		@eventLoader.createEvent event, ( ->
+		@eventLoader.createEvent event, ->
 			$.log('Created event')
 			eventDOM.removeClass('updating')
-		), ->
+		, ->
 			$.log('Failed to create event')
 			eventDOM.removeClass('updating')
 			eventDOM.addClass('error')

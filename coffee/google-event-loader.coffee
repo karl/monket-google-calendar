@@ -10,7 +10,7 @@ class window.GoogleEventLoader
 
 	init: (successCallback, failureCallback) ->
 		@loading.show()
-		@service.getAllCalendarsFeed 'http://www.google.com/calendar/feeds/default/allcalendars/full', ( (result) =>
+		@service.getAllCalendarsFeed 'http://www.google.com/calendar/feeds/default/allcalendars/full', (result) =>
 			@loading.hide()
 			@calendars: result.feed.entry
 
@@ -20,7 +20,7 @@ class window.GoogleEventLoader
 					accessValue == google.gdata.calendar.AccessLevelProperty.VALUE_EDITOR
 
 			successCallback()
-		), =>
+		, =>
 			@loading.hide()
 			failureCallback()
 		
@@ -65,7 +65,7 @@ class window.GoogleEventLoader
 			@addCallbacks startDate, endDate, successCallback, failureCallback
 
 			for i in [0...@calendars.length]
-				@loadFromGoogle cacheStartDate, cacheEndDate, ( (entries) => 
+				@loadFromGoogle cacheStartDate, cacheEndDate, (entries) => 
 					cacheInfo: @cache[@getCacheKey startDate]
 					cacheInfo.remaining--
 					cacheInfo.entries: cacheInfo.entries.concat entries
@@ -78,7 +78,7 @@ class window.GoogleEventLoader
 					# // if (localStorage) {
 					# //	localStorage.offlineCache = JSON.stringify(me.cache);
 					# // }
-				), ( =>
+				, =>
 					cacheInfo: @cache[@getCacheKey startDate]
 					cacheInfo.remaining--
 
@@ -86,7 +86,7 @@ class window.GoogleEventLoader
 					if cacheInfo.remaining == 0
 						@clearCallbacks cacheInfo
 						@loading.hide()
-				), i
+				, i
 
 	getCacheKey: (startDate) ->
 		startDate.getFullYear()
@@ -175,14 +175,15 @@ class window.GoogleEventLoader
 
 					entryendDate: entrystartDate.addDays length
 
-				event: {}
-				event.summary: $.trim(entry.getTitle().getText())
-				event.calNumber: calNumber
-				event.start: entrystartDate
-				event.end: entryendDate
-				event.length: length
-				event.editable: @calendars[calNumber].editable
-				event.googleEvent: entry
+				event: {
+					summary: $.trim(entry.getTitle().getText())
+					calNumber: calNumber
+					start: entrystartDate
+					end: entryendDate
+					length: length
+					editable: @calendars[calNumber].editable
+					googleEvent: entry
+				}
 
 				results.push event if entryendDate > startDate
 
@@ -225,18 +226,18 @@ class window.GoogleEventLoader
 		feedUri: @getFeedUriForCalendar(event.calNumber)
 		
 		# Submit the request using the calendar service object
-		@service.insertEntry feedUri, entry, ( (response) =>
+		@service.insertEntry feedUri, entry, (response) =>
 			event.googleEvent: response.entry
 			successCallback()
-		), ( =>
+		, =>
 			failureCallback()
-		), google.gdata.calendar.CalendarEventEntry
+		, google.gdata.calendar.CalendarEventEntry
 
 	saveChanges: (event, success, failure) ->
-		event.googleEvent.updateEntry ( (response) =>
+		event.googleEvent.updateEntry (response) =>
 			event.googleEvent: response.entry
 			success response
-		), (response) =>
+		, (response) =>
 			failure response
 
 	moveToNewCalendar: (event, oldCalNumber, success, failure) ->
@@ -244,21 +245,21 @@ class window.GoogleEventLoader
 		# then if successful remove it from the old calendar
 		
 		feedUri: @getFeedUriForCalendar event.calNumber
-		@service.insertEntry feedUri, event.googleEvent, ( (response) =>
+		@service.insertEntry feedUri, event.googleEvent, (response) =>
 			newGoogleEvent: response.entry
 			
-			event.googleEvent.deleteEntry ( (response) =>
+			event.googleEvent.deleteEntry (response) =>
 				event.googleEvent: newGoogleEvent
 				event.googleEvent.getSequence().setValue(event.googleEvent.getSequence().getValue() + 1)
 
 				success response
 				
-			), (response) =>
+			, (response) =>
 				failure response
 			
-		), ( (response) =>
+		, (response) =>
 			failure response
-		), google.gdata.calendar.CalendarEventEntry
+		, google.gdata.calendar.CalendarEventEntry
 
 	addEvent: (event) ->
 		startDate: event.start

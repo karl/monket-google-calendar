@@ -79,11 +79,11 @@
           event_when.setStartTime(startTime);
           event_when.setEndTime(endTime);
           event.googleEvent.setTimes([event_when]);
-          return event.googleEvent.updateEntry((__bind(function(response) {
+          return event.googleEvent.updateEntry(__bind(function(response) {
               console.log('Updated event!', arguments);
               event.googleEvent = response.entry;
               return event.googleEvent.getSequence().setValue(event.googleEvent.getSequence().getValue() + 1);
-            }, this)), __bind(function() {
+            }, this), __bind(function() {
               return console.log('Failed to update event :(', arguments);
             }, this));
         }
@@ -153,11 +153,11 @@
           google_when.setStartTime(startTime);
           google_when.setEndTime(endTime);
           event.googleEvent.setTimes([google_when]);
-          return event.googleEvent.updateEntry((function(response) {
+          return event.googleEvent.updateEntry(function(response) {
             console.log('Updated event!', arguments);
             event.googleEvent = response.entry;
             return event.googleEvent.getSequence().setValue(event.googleEvent.getSequence().getValue() + 1);
-          }), function() {
+          }, function() {
             return console.log('Failed to update event :(', arguments);
           });
         }
@@ -212,10 +212,10 @@
         event.isDeleting = true;
         removeEditor();
         if (event.googleEvent) {
-          return event.googleEvent.deleteEntry((__bind(function() {
+          return event.googleEvent.deleteEntry(__bind(function() {
               $.log('Deleted event', arguments);
               return this.removeEvent(event, eventDOM);
-            }, this)), function() {
+            }, this), function() {
             $.log('Failed to delete event', arguments);
             eventDOM.removeClass('updating');
             eventDOM.addClass('error');
@@ -248,19 +248,19 @@
             eventDOM.addClass('updating');
             if (event.googleEvent) {
               event.googleEvent.setTitle(google.gdata.Text.create(text));
-              event.calNumber !== startCalNumber ? this.eventLoader.moveToNewCalendar(event, startCalNumber, (function() {
+              event.calNumber !== startCalNumber ? this.eventLoader.moveToNewCalendar(event, startCalNumber, function() {
                 $.log('Updated event', arguments);
                 return eventDOM.removeClass('updating');
-              }), function(response) {
+              }, function(response) {
                 console.log(response);
                 // TODO: reset event
                 $.log('Failed to move event to new calendar :(', arguments);
                 eventDOM.removeClass('updating');
                 return eventDOM.addClass('error');
-              }) : this.eventLoader.saveChanges(event, (function() {
+              }) : this.eventLoader.saveChanges(event, function() {
                 $.log('Updated event', arguments);
                 return eventDOM.removeClass('updating');
-              }), function() {
+              }, function() {
                 // TODO: reset event
                 $.log('Failed to update event :(', arguments);
                 eventDOM.removeClass('updating');
@@ -292,14 +292,14 @@
         return e.preventDefault();
       }
     });
-    return setTimeout((function() {
+    return setTimeout(function() {
       $(delButton).click(function(e) {
         deleteEvent();
         return e.stopPropagation();
       });
       $('body').click(removeEditor);
       return $("#body").mousewheel(removeEditor);
-    }), 0);
+    }, 0);
   };
   window.EventCreator.prototype.getCalendarPicker = function getCalendarPicker(event, eventDOM) {
     var calendarPicker, name, swatches;
@@ -336,10 +336,10 @@
     return $('.inner', eventDOM).css('background-color', this.colourMap[color]);
   };
   window.EventCreator.prototype.createNewGoogleEvent = function createNewGoogleEvent(event, eventDOM) {
-    return this.eventLoader.createEvent(event, (function() {
+    return this.eventLoader.createEvent(event, function() {
       $.log('Created event');
       return eventDOM.removeClass('updating');
-    }), function() {
+    }, function() {
       $.log('Failed to create event');
       eventDOM.removeClass('updating');
       return eventDOM.addClass('error');

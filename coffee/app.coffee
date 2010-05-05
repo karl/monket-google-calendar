@@ -12,7 +12,7 @@ google.setOnLoadCallback ->
 		myService: new google.gdata.calendar.CalendarService "monket-calendar-2"
 		googleEventLoader = new GoogleEventLoader myService, loading
 		
-		googleEventLoader.init(( ->
+		googleEventLoader.init ->
 			colourMap: ColourMap
 			config: new MonketCalendarConfig()
 			dayHighlighter: new DayHighlighter config
@@ -20,9 +20,9 @@ google.setOnLoadCallback ->
 			weekCreator: new WeekCreator config, dayHighlighter, googleEventLoader
 			eventLayoutManager: new EventLayoutManager config, eventCreator
 			calendar: new Calendar config, googleEventLoader, notification, eventLayoutManager, weekCreator, dayHighlighter
-		), -> 
+		, -> 
 			notification.show "Unable to load Google Calendars" 
-		)
+		
 	else
 		# still need to log in
 		notification.hide()

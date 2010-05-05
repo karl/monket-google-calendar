@@ -11,9 +11,9 @@
   window.EventLayoutManager.prototype.resize = function resize() {
     this.recalculateConstants = true;
     clearTimeout(this.resizeTimeout);
-    this.resizeTimeout = setTimeout((function() {
+    this.resizeTimeout = setTimeout(function() {
       return console.log('re-layout weeks');
-    }), 500);
+    }, 500);
     return this.resizeTimeout;
   };
   // only recaculate constants if they need redefining (e.g. first layout or browser resize)
@@ -65,7 +65,7 @@
     eventDOM = this.eventCreator.create(event);
     // Now attempt to find a line where we can place the event
     startLine = this.findLineForEvent(event);
-    if (startLine !== null) {
+    if ((typeof startLine !== "undefined" && startLine !== null)) {
       eventDOM.css({
         top: (startLine + 1) * this.lineHeight
       });
@@ -105,7 +105,7 @@
       event.isStart = event.start >= weekDate;
       event.isEnd = event.end <= weekDate.addWeeks(1);
       event.requiredLines = event.isStart && event.isEnd ? this.getRequiredLines(event) : 1;
-      preppedEvents[preppedEvents.length] = event;
+      preppedEvents.push(event);
     }
     // order events by num of days, then by text length
     preppedEvents.sort(this.eventSort);
@@ -139,21 +139,16 @@
     return null;
   };
   window.EventLayoutManager.prototype.markLayoutSpaceAsUsed = function markLayoutSpaceAsUsed(event, startLine) {
-    var _a, date, j;
-    j = startLine;
-    _a = [];
-    while (j < (startLine + event.requiredLines)) {
-      _a.push((function() {
-        date = event.weekStart;
-        while (date < event.weekEnd) {
-          this.layoutGrid[j][date] = 1;
-          date = date.addDays(1);
-        }
-        j++;
-        return null;
-      }).call(this));
+    var _a, _b, date, j;
+    _a = startLine; _b = startLine + event.requiredLines;
+    for (j = _a; (_a <= _b ? j < _b : j > _b); (_a <= _b ? j += 1 : j -= 1)) {
+      date = event.weekStart;
+      while (date < event.weekEnd) {
+        this.layoutGrid[j][date] = 1;
+        date = date.addDays(1);
+      }
     }
-    return _a;
+    return null;
   };
   // order events by week length, then by text length
   window.EventLayoutManager.prototype.eventSort = function eventSort(eventA, eventB) {
