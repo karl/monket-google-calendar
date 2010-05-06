@@ -320,16 +320,7 @@
     id = $(e.target).attr('id');
     dateString = id.substring(this.config.dayIdPrefix.length);
     date = Date.parseYMD(dateString);
-    // Create event in memory
-    event = {
-      isNew: true,
-      summary: '',
-      calNumber: 0,
-      start: date,
-      end: date.addDays(1),
-      length: 1,
-      editable: true
-    };
+    event = this.eventLoader.createEventObject('', 0, date, date.addDays(1), 1, true, null, true);
     this.eventLoader.addEvent(event);
     return $('.new', day).click();
   };

@@ -157,35 +157,9 @@ class window.GoogleEventLoader
 			results: []
 
 			for entry in entries
-				times: entry.getTimes()
+				event: @createEventFromGoogleEvent entry, calNumber
 
-				if times.length > 0
-					startTime: times[0].getStartTime().getDate()
-					entrystartDate: new Date(startTime.getFullYear(), startTime.getMonth(), startTime.getDate())
-
-					endTime: times[0].getEndTime().getDate()
-					endDate: new Date(endTime.getFullYear(), endTime.getMonth(), endTime.getDate())
-
-					# Get the whole number of days difference
-					# And then add on any extra hours in the last day
-					# Done like this to avoid issues when summer time changes
-					length: Math.round((endDate - entrystartDate) / (1000 * 60 * 60 * 24))
-					if (endTime - endDate) > 0
-						length++
-
-					entryendDate: entrystartDate.addDays length
-
-				event: {
-					summary: $.trim(entry.getTitle().getText())
-					calNumber: calNumber
-					start: entrystartDate
-					end: entryendDate
-					length: length
-					editable: @calendars[calNumber].editable
-					googleEvent: entry
-				}
-
-				results.push event if entryendDate > startDate
+				results.push event if event.end > startDate
 
 			successCallback results, startDate, endDate
 
@@ -204,6 +178,85 @@ class window.GoogleEventLoader
 
 		@service.getEventsFeed query, eventsCallback, failureCallback
 	
+	createEventFromGoogleEvent: (entry, calNumber) ->
+		times: entry.getTimes()
+
+		if times.length > 0
+			startTime: times[0].getStartTime().getDate()
+			entryStartDate: new Date(startTime.getFullYear(), startTime.getMonth(), startTime.getDate())
+
+			endTime: times[0].getEndTime().getDate()
+			endDate: new Date(endTime.getFullYear(), endTime.getMonth(), endTime.getDate())
+
+			# Get the whole number of days difference
+			# And then add on any extra hours in the last day
+			# Done like this to avoid issues when summer time changes
+			length: Math.round((endDate - entryStartDate) / (1000 * 60 * 60 * 24))
+			if (endTime - endDate) > 0
+				length++
+
+			entryEndDate: entryStartDate.addDays length
+
+		summary: $.trim(entry.getTitle().getText())
+		editable: @calendars[calNumber].editable
+		
+		@createEventObject summary, calNumber, entryStartDate, entryEndDate, length, editable, entry
+
+	createEventObject: (summary, calNumber, start, end, length, editable, googleEvent, isNew) ->
+		event: {
+			summary: summary
+			calNumber: calNumber
+			start: start
+			end: end
+			length: length
+			editable: editable
+			googleEvent: googleEvent
+			isNew: isNew
+		}
+		
+		event.save: (success, failure, startCalNumber) =>
+			if event.googleEvent
+				# Set title
+				event.googleEvent.setTitle(google.gdata.Text.create(event.summary))
+
+				# Set time
+				startTime: new google.gdata.DateTime(event.start, true)
+				endTime: new google.gdata.DateTime(event.end, true)
+
+				event_when: new google.gdata.When()
+				event_when.setStartTime(startTime)
+				event_when.setEndTime(endTime)
+				event.googleEvent.setTimes([event_when])
+
+
+				if startCalNumber? and event.calNumber != startCalNumber
+					@moveToNewCalendar event, startCalNumber, success, failure
+				else
+					@saveChanges event, success, failure
+			else
+				event.isNew: false
+				@createEvent event, success, failure
+
+
+		event.remove: (success, failure) =>
+			return success() unless event.googleEvent
+			
+			event.googleEvent.deleteEntry =>
+				@removeEvent(event)
+				success()
+			, =>
+				failure()
+
+		
+		event	
+
+	addEvent: (event) ->
+		startDate: event.start
+		cacheInfo: @cache[@getCacheKey startDate]
+		cacheInfo.entries.push event
+
+		@addEventHook event
+
 	createEvent: (event, successCallback, failureCallback) ->
 		# Create an instance of CalendarEventEntry representing the new event
 		entry: new google.gdata.calendar.CalendarEventEntry()
@@ -236,6 +289,7 @@ class window.GoogleEventLoader
 	saveChanges: (event, success, failure) ->
 		event.googleEvent.updateEntry (response) =>
 			event.googleEvent: response.entry
+			event.googleEvent.getSequence().setValue(event.googleEvent.getSequence().getValue() + 1)
 			success response
 		, (response) =>
 			failure response
@@ -261,13 +315,6 @@ class window.GoogleEventLoader
 			failure response
 		, google.gdata.calendar.CalendarEventEntry
 
-	addEvent: (event) ->
-		startDate: event.start
-		cacheInfo: @cache[@getCacheKey startDate]
-		cacheInfo.entries.push event
-		
-		@addEventHook event
-		
 	updateEvent: (event, oldStart, oldEnd) ->
 		@updateEventHook event, oldStart, oldEnd
 		

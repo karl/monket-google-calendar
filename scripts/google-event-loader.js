@@ -172,35 +172,14 @@
   window.GoogleEventLoader.prototype.loadFromGoogle = function loadFromGoogle(startDate, endDate, successCallback, failureCallback, calNumber) {
     var eventsCallback, query, startMax, startMin, uri;
     eventsCallback = __bind(function(result) {
-        var _a, _b, _c, endTime, entries, entry, entryendDate, entrystartDate, event, length, results, startTime, times;
+        var _a, _b, _c, entries, entry, event, results;
         entries = result.feed.entry;
         results = [];
         _b = entries;
         for (_a = 0, _c = _b.length; _a < _c; _a++) {
           entry = _b[_a];
-          times = entry.getTimes();
-          if (times.length > 0) {
-            startTime = times[0].getStartTime().getDate();
-            entrystartDate = new Date(startTime.getFullYear(), startTime.getMonth(), startTime.getDate());
-            endTime = times[0].getEndTime().getDate();
-            endDate = new Date(endTime.getFullYear(), endTime.getMonth(), endTime.getDate());
-            // Get the whole number of days difference
-            // And then add on any extra hours in the last day
-            // Done like this to avoid issues when summer time changes
-            length = Math.round((endDate - entrystartDate) / (1000 * 60 * 60 * 24));
-            (endTime - endDate) > 0 ? length++ : null;
-            entryendDate = entrystartDate.addDays(length);
-          }
-          event = {
-            summary: $.trim(entry.getTitle().getText()),
-            calNumber: calNumber,
-            start: entrystartDate,
-            end: entryendDate,
-            length: length,
-            editable: this.calendars[calNumber].editable,
-            googleEvent: entry
-          };
-          if (entryendDate > startDate) {
+          event = this.createEventFromGoogleEvent(entry, calNumber);
+          if (event.end > startDate) {
             results.push(event);
           }
         }
@@ -217,6 +196,79 @@
     query.setOrderBy('starttime');
     query.setSortOrder('a');
     return this.service.getEventsFeed(query, eventsCallback, failureCallback);
+  };
+  window.GoogleEventLoader.prototype.createEventFromGoogleEvent = function createEventFromGoogleEvent(entry, calNumber) {
+    var editable, endDate, endTime, entryEndDate, entryStartDate, length, startTime, summary, times;
+    times = entry.getTimes();
+    if (times.length > 0) {
+      startTime = times[0].getStartTime().getDate();
+      entryStartDate = new Date(startTime.getFullYear(), startTime.getMonth(), startTime.getDate());
+      endTime = times[0].getEndTime().getDate();
+      endDate = new Date(endTime.getFullYear(), endTime.getMonth(), endTime.getDate());
+      // Get the whole number of days difference
+      // And then add on any extra hours in the last day
+      // Done like this to avoid issues when summer time changes
+      length = Math.round((endDate - entryStartDate) / (1000 * 60 * 60 * 24));
+      (endTime - endDate) > 0 ? length++ : null;
+      entryEndDate = entryStartDate.addDays(length);
+    }
+    summary = $.trim(entry.getTitle().getText());
+    editable = this.calendars[calNumber].editable;
+    return this.createEventObject(summary, calNumber, entryStartDate, entryEndDate, length, editable, entry);
+  };
+  window.GoogleEventLoader.prototype.createEventObject = function createEventObject(summary, calNumber, start, end, length, editable, googleEvent, isNew) {
+    var event;
+    event = {
+      summary: summary,
+      calNumber: calNumber,
+      start: start,
+      end: end,
+      length: length,
+      editable: editable,
+      googleEvent: googleEvent,
+      isNew: isNew
+    };
+    event.save = __bind(function(success, failure, startCalNumber) {
+        var endTime, event_when, startTime;
+        if (event.googleEvent) {
+          // Set title
+          event.googleEvent.setTitle(google.gdata.Text.create(event.summary));
+          // Set time
+          startTime = new google.gdata.DateTime(event.start, true);
+          endTime = new google.gdata.DateTime(event.end, true);
+          event_when = new google.gdata.When();
+          event_when.setStartTime(startTime);
+          event_when.setEndTime(endTime);
+          event.googleEvent.setTimes([event_when]);
+          if ((typeof startCalNumber !== "undefined" && startCalNumber !== null) && event.calNumber !== startCalNumber) {
+            return this.moveToNewCalendar(event, startCalNumber, success, failure);
+          } else {
+            return this.saveChanges(event, success, failure);
+          }
+        } else {
+          event.isNew = false;
+          return this.createEvent(event, success, failure);
+        }
+      }, this);
+    event.remove = __bind(function(success, failure) {
+        if (!(event.googleEvent)) {
+          return success();
+        }
+        return event.googleEvent.deleteEntry(__bind(function() {
+            this.removeEvent(event);
+            return success();
+          }, this), __bind(function() {
+            return failure();
+          }, this));
+      }, this);
+    return event;
+  };
+  window.GoogleEventLoader.prototype.addEvent = function addEvent(event) {
+    var cacheInfo, startDate;
+    startDate = event.start;
+    cacheInfo = this.cache[this.getCacheKey(startDate)];
+    cacheInfo.entries.push(event);
+    return this.addEventHook(event);
   };
   window.GoogleEventLoader.prototype.createEvent = function createEvent(event, successCallback, failureCallback) {
     var endTime, entry, feedUri, google_when, startTime;
@@ -245,6 +297,7 @@
   window.GoogleEventLoader.prototype.saveChanges = function saveChanges(event, success, failure) {
     return event.googleEvent.updateEntry(__bind(function(response) {
         event.googleEvent = response.entry;
+        event.googleEvent.getSequence().setValue(event.googleEvent.getSequence().getValue() + 1);
         return success(response);
       }, this), __bind(function(response) {
         return failure(response);
@@ -268,13 +321,6 @@
       }, this), __bind(function(response) {
         return failure(response);
       }, this), google.gdata.calendar.CalendarEventEntry);
-  };
-  window.GoogleEventLoader.prototype.addEvent = function addEvent(event) {
-    var cacheInfo, startDate;
-    startDate = event.start;
-    cacheInfo = this.cache[this.getCacheKey(startDate)];
-    cacheInfo.entries.push(event);
-    return this.addEventHook(event);
   };
   window.GoogleEventLoader.prototype.updateEvent = function updateEvent(event, oldStart, oldEnd) {
     return this.updateEventHook(event, oldStart, oldEnd);

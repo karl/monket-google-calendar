@@ -69,23 +69,13 @@
         }
       }, this);
     do_drag_stop = __bind(function() {
-        var endTime, event_when, startTime;
         $('#body').unbind('mousemove');
         if ((event.start - dragging.start !== 0 || event.end - dragging.end !== 0)) {
-          // Update google event
-          event_when = new google.gdata.When();
-          startTime = new google.gdata.DateTime(event.start, true);
-          endTime = new google.gdata.DateTime(event.end, true);
-          event_when.setStartTime(startTime);
-          event_when.setEndTime(endTime);
-          event.googleEvent.setTimes([event_when]);
-          return event.googleEvent.updateEntry(__bind(function(response) {
-              console.log('Updated event!', arguments);
-              event.googleEvent = response.entry;
-              return event.googleEvent.getSequence().setValue(event.googleEvent.getSequence().getValue() + 1);
-            }, this), __bind(function() {
-              return console.log('Failed to update event :(', arguments);
-            }, this));
+          return event.save(function() {
+            return $.log('Moved event');
+          }, function() {
+            return $.log('Failed to move event');
+          });
         }
       }, this);
     eventDOM.draggable({
@@ -141,24 +131,14 @@
         }
       }, this);
     do_resize_stop = __bind(function(e, ui) {
-        var endTime, google_when, startTime;
         $('#body').unbind('mousemove');
         eventDOM.remove();
         this.eventLoader.updateEvent(event);
         if (event.start - resizing.start !== 0 || event.end - resizing.end !== 0) {
-          // Update google event
-          google_when = new google.gdata.When();
-          startTime = new google.gdata.DateTime(event.start, true);
-          endTime = new google.gdata.DateTime(event.end, true);
-          google_when.setStartTime(startTime);
-          google_when.setEndTime(endTime);
-          event.googleEvent.setTimes([google_when]);
-          return event.googleEvent.updateEntry(function(response) {
-            console.log('Updated event!', arguments);
-            event.googleEvent = response.entry;
-            return event.googleEvent.getSequence().setValue(event.googleEvent.getSequence().getValue() + 1);
+          return event.save(function() {
+            return $.log('Resized event');
           }, function() {
-            return console.log('Failed to update event :(', arguments);
+            return $.log('Failed to resize event');
           });
         }
       }, this);
@@ -211,20 +191,16 @@
     deleteEvent = __bind(function() {
         event.isDeleting = true;
         removeEditor();
-        if (event.googleEvent) {
-          return event.googleEvent.deleteEntry(__bind(function() {
-              $.log('Deleted event', arguments);
-              return this.removeEvent(event, eventDOM);
-            }, this), function() {
+        return event.remove(__bind(function() {
+            $.log('Deleted event', arguments);
+            return eventDOM.remove();
+          }, this), __bind(function() {
             $.log('Failed to delete event', arguments);
             eventDOM.removeClass('updating');
             eventDOM.addClass('error');
             event.isDeleting = false;
             return event.isDeleting;
-          });
-        } else {
-          return this.removeEvent(event, eventDOM);
-        }
+          }, this));
       }, this);
     removeEditor = __bind(function(e) {
         var eventChanged, text;
@@ -246,30 +222,14 @@
           eventChanged = text !== startText || event.calNumber !== startCalNumber;
           if (eventChanged && !event.isDeleting) {
             eventDOM.addClass('updating');
-            if (event.googleEvent) {
-              event.googleEvent.setTitle(google.gdata.Text.create(text));
-              event.calNumber !== startCalNumber ? this.eventLoader.moveToNewCalendar(event, startCalNumber, function() {
+            event.save(__bind(function() {
                 $.log('Updated event', arguments);
                 return eventDOM.removeClass('updating');
-              }, function(response) {
-                console.log(response);
-                // TODO: reset event
-                $.log('Failed to move event to new calendar :(', arguments);
+              }, this), __bind(function() {
+                $.log('Failed update event :(', arguments);
                 eventDOM.removeClass('updating');
                 return eventDOM.addClass('error');
-              }) : this.eventLoader.saveChanges(event, function() {
-                $.log('Updated event', arguments);
-                return eventDOM.removeClass('updating');
-              }, function() {
-                // TODO: reset event
-                $.log('Failed to update event :(', arguments);
-                eventDOM.removeClass('updating');
-                return eventDOM.addClass('error');
-              });
-            } else {
-              event.isNew = false;
-              this.createNewGoogleEvent(event, eventDOM);
-            }
+              }, this), startCalNumber);
           } else if (event.isDeleteing) {
             eventDOM.addClass('updating');
           }
@@ -334,19 +294,5 @@
     var color;
     color = this.eventLoader.calendars[calNumber].getColor().getValue();
     return $('.inner', eventDOM).css('background-color', this.colourMap[color]);
-  };
-  window.EventCreator.prototype.createNewGoogleEvent = function createNewGoogleEvent(event, eventDOM) {
-    return this.eventLoader.createEvent(event, function() {
-      $.log('Created event');
-      return eventDOM.removeClass('updating');
-    }, function() {
-      $.log('Failed to create event');
-      eventDOM.removeClass('updating');
-      return eventDOM.addClass('error');
-    });
-  };
-  window.EventCreator.prototype.removeEvent = function removeEvent(event, eventDOM) {
-    eventDOM.remove();
-    return this.eventLoader.removeEvent(event);
   };
 })();

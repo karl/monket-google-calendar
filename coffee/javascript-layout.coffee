@@ -277,18 +277,8 @@ class window.Calendar
 		id: $(e.target).attr 'id'
 		dateString: id.substring @config.dayIdPrefix.length
 		date: Date.parseYMD dateString
-		
-		# Create event in memory
-		event: {
-			isNew: true
-			summary: ''
-			calNumber: 0
-			start: date
-			end: date.addDays 1
-			length: 1
-			editable: true
-		}
-				
+
+		event: @eventLoader.createEventObject '', 0, date, date.addDays(1), 1, true, null, true
 		@eventLoader.addEvent event
 
 		$('.new', day).click()		
