@@ -217,7 +217,7 @@ class window.GoogleEventLoader
 		event.save: (success, failure, startCalNumber) =>
 			if event.googleEvent
 				# Set title
-				event.googleEvent.setTitle(google.gdata.Text.create(event.summary))
+				event.googleEvent.getTitle().setText(event.summary)
 
 				# Set time
 				startTime: new google.gdata.DateTime(event.start, true)
@@ -259,22 +259,16 @@ class window.GoogleEventLoader
 
 	createEvent: (event, successCallback, failureCallback) ->
 		# Create an instance of CalendarEventEntry representing the new event
-		entry: new google.gdata.calendar.CalendarEventEntry()
-
-		# Set the title of the event
-		entry.setTitle google.gdata.Text.create(event.summary)
-
-		# Create a When object that will be attached to the event
-		google_when: new google.gdata.When()
-
-		# Set the start and end time of the When object
-		startTime: new google.gdata.DateTime(event.start, true)
-		endTime: new google.gdata.DateTime(event.end, true)
-		google_when.setStartTime(startTime)
-		google_when.setEndTime(endTime)
-		
-		# Add the When object to the event
-		entry.addTime(google_when)
+		entry: new google.gdata.calendar.CalendarEventEntry {
+			title: {
+				type: 'text'
+				text: event.summary
+			}
+			times: [{
+				startTime: new google.gdata.DateTime(event.start, true)
+				endTime: new google.gdata.DateTime(event.end, true)
+			}]
+		}
 
 		feedUri: @getFeedUriForCalendar(event.calNumber)
 		

@@ -9,6 +9,8 @@ google.setOnLoadCallback ->
 	notification.show "Checking Google Calendar access"
 	
 	if google.accounts.user.checkLogin scope
+		//
+		
 		myService: new google.gdata.calendar.CalendarService "monket-calendar-2"
 		googleEventLoader = new GoogleEventLoader myService, loading
 		
