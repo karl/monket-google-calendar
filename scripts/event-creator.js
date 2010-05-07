@@ -35,13 +35,14 @@
     if (event.isNew) {
       eventDOM.addClass('new');
     }
-    this.setColour(eventDOM, event.calNumber);
+    event.eventDOM = eventDOM;
+    this.setColour(event, event.calNumber);
     if (event.editable) {
-      this.makeEditable(event, eventDOM);
+      this.makeEditable(event);
     }
     return eventDOM;
   };
-  window.EventCreator.prototype.makeEditable = function makeEditable(event, eventDOM) {
+  window.EventCreator.prototype.makeEditable = function makeEditable(event) {
     var do_drag, do_drag_stop, do_resize, do_resize_start, do_resize_stop, do_start_drag, dragging, handles, resizing;
     dragging = {};
     do_start_drag = __bind(function(ev, ui) {
@@ -71,14 +72,16 @@
     do_drag_stop = __bind(function() {
         $('#body').unbind('mousemove');
         if ((event.start - dragging.start !== 0 || event.end - dragging.end !== 0)) {
-          return event.save(function() {
-            return $.log('Moved event');
-          }, function() {
-            return $.log('Failed to move event');
-          });
+          event.eventDOM.addClass('updating');
+          return event.save(__bind(function() {
+              $.log('Moved event', arguments);
+              return event.eventDOM.removeClass('updating');
+            }, this), __bind(function() {
+              return $.log('Failed to move event :(', arguments, event.eventDOM.removeClass('updating'), event.eventDOM.addClass('error'));
+            }, this));
         }
       }, this);
-    eventDOM.draggable({
+    event.eventDOM.draggable({
       revert: true,
       distance: 10,
       helper: function helper() {
@@ -86,7 +89,7 @@
       },
       scroll: false,
       cursor: 'move',
-      handle: $('.text', eventDOM),
+      handle: $('.text', event.eventDOM),
       start: do_start_drag,
       drag: do_drag,
       stop: do_drag_stop
@@ -132,39 +135,41 @@
       }, this);
     do_resize_stop = __bind(function(e, ui) {
         $('#body').unbind('mousemove');
-        eventDOM.remove();
-        this.eventLoader.updateEvent(event);
+        // event.eventDOM.remove()
+        // @eventLoader.updateEvent(event)
+        event.eventDOM.addClass('updating');
         if (event.start - resizing.start !== 0 || event.end - resizing.end !== 0) {
-          return event.save(function() {
-            return $.log('Resized event');
-          }, function() {
-            return $.log('Failed to resize event');
-          });
+          return event.save(__bind(function() {
+              $.log('Resized event', arguments);
+              return event.eventDOM.removeClass('updating');
+            }, this), __bind(function() {
+              return $.log('Failed to resize event :(', arguments, event.eventDOM.removeClass('updating'), event.eventDOM.addClass('error'));
+            }, this));
         }
       }, this);
-    event.isStart || event.isEnd ? eventDOM.resizable({
+    event.isStart || event.isEnd ? event.eventDOM.resizable({
       handles: handles.join(', '),
       ghost: true,
       start: do_resize_start,
       resize: do_resize,
       stop: do_resize_stop
     }) : null;
-    return eventDOM.click(__bind(function() {
-        return this.click(event, eventDOM);
+    return event.eventDOM.click(__bind(function() {
+        return this.click(event);
       }, this));
   };
-  window.EventCreator.prototype.click = function click(event, eventDOM) {
+  window.EventCreator.prototype.click = function click(event) {
     var calendarPicker, delButton, deleteEvent, editor, parent, removeEditor, startCalNumber, startText, top;
-    if (eventDOM.hasClass('editing')) {
+    if (event.eventDOM.hasClass('editing')) {
       return null;
     }
     editor = $('#templates .editor').clone();
     delButton = $('#templates .delete').clone();
-    calendarPicker = this.getCalendarPicker(event, eventDOM);
-    startText = $('.text', eventDOM).text();
+    calendarPicker = this.getCalendarPicker(event);
+    startText = $('.text', event.eventDOM).text();
     startCalNumber = event.calNumber;
     $('textarea', editor).text(event.isNew ? 'New event...' : startText);
-    $('textarea', editor).height($('.text', eventDOM).height());
+    $('textarea', editor).height($('.text', event.eventDOM).height());
     $('textarea', editor).keyup(function() {
       var height, text;
       text = $('textarea', editor).val();
@@ -172,32 +177,33 @@
       $("#layout-event").width((event.weekLength * 14.2857) + "%");
       height = $("#layout-event .text").text(text).outerHeight();
       $('textarea', editor).height(height);
-      return eventDOM.css('border', 'none');
+      return event.eventDOM.css('border', 'none');
     }).keyup();
-    parent = eventDOM.parent();
-    top = eventDOM.css('top');
-    eventDOM.css({
-      top: eventDOM.offset().top,
-      left: eventDOM.offset().left
+    parent = event.eventDOM.parent();
+    top = event.eventDOM.css('top');
+    event.eventDOM.css({
+      top: event.eventDOM.offset().top,
+      left: event.eventDOM.offset().left
     });
-    eventDOM.appendTo($('body'));
-    $('.text', eventDOM).hide();
-    $('.inner', eventDOM).append(editor);
-    delButton.appendTo(eventDOM).hide().fadeIn();
-    calendarPicker.appendTo(eventDOM).hide().fadeIn();
+    event.eventDOM.appendTo($('body'));
+    $('.text', event.eventDOM).hide();
+    $('.inner', event.eventDOM).append(editor);
+    delButton.appendTo(event.eventDOM).hide().fadeIn();
+    calendarPicker.appendTo(event.eventDOM).hide().fadeIn();
     $('textarea', editor).focus().select();
-    eventDOM.addClass('editing');
-    eventDOM.removeClass('error');
+    event.eventDOM.addClass('editing');
+    event.eventDOM.removeClass('error');
     deleteEvent = __bind(function() {
         event.isDeleting = true;
         removeEditor();
+        event.eventDOM.addClass('updating');
         return event.remove(__bind(function() {
             $.log('Deleted event', arguments);
-            return eventDOM.remove();
+            return event.eventDOM.remove();
           }, this), __bind(function() {
             $.log('Failed to delete event', arguments);
-            eventDOM.removeClass('updating');
-            eventDOM.addClass('error');
+            event.eventDOM.removeClass('updating');
+            event.eventDOM.addClass('error');
             event.isDeleting = false;
             return event.isDeleting;
           }, this));
@@ -210,28 +216,26 @@
             deleteEvent();
             return null;
           }
-          eventDOM.appendTo(parent);
-          eventDOM.css('top', top);
-          $('.text', eventDOM).text(text).show();
+          event.eventDOM.appendTo(parent);
+          event.eventDOM.css('top', top);
+          $('.text', event.eventDOM).text(text).show();
           event.summary = text;
           editor.remove();
           delButton.remove();
           calendarPicker.remove();
-          eventDOM.removeClass('editing');
+          event.eventDOM.removeClass('editing');
           this.eventLoader.updateEvent(event);
           eventChanged = text !== startText || event.calNumber !== startCalNumber;
           if (eventChanged && !event.isDeleting) {
-            eventDOM.addClass('updating');
+            event.eventDOM.addClass('updating');
             event.save(__bind(function() {
                 $.log('Updated event', arguments);
-                return eventDOM.removeClass('updating');
+                return event.eventDOM.removeClass('updating');
               }, this), __bind(function() {
-                $.log('Failed update event :(', arguments);
-                eventDOM.removeClass('updating');
-                return eventDOM.addClass('error');
+                return $.log('Failed update event :(', arguments, event.eventDOM.removeClass('updating'), event.eventDOM.addClass('error'));
               }, this), startCalNumber);
           } else if (event.isDeleteing) {
-            eventDOM.addClass('updating');
+            event.eventDOM.addClass('updating');
           }
           $('body').unbind('click', removeEditor);
           $("#body").unbind('mousewheel', removeEditor);
@@ -261,7 +265,7 @@
       return $("#body").mousewheel(removeEditor);
     }, 0);
   };
-  window.EventCreator.prototype.getCalendarPicker = function getCalendarPicker(event, eventDOM) {
+  window.EventCreator.prototype.getCalendarPicker = function getCalendarPicker(event) {
     var calendarPicker, name, swatches;
     // Build calendar picker
     calendarPicker = $('#templates .calendar-picker').clone();
@@ -280,19 +284,19 @@
           return name.text('');
         };
         do_click = __bind(function() {
-            return this.changeCalendar(event, eventDOM, i);
+            return this.changeCalendar(event, i);
           }, this);
         return $('#templates .calendar-swatch').clone().css('background-color', this.colourMap[color]).attr('id', 'calendar-swatch-' + i).hover(do_hover_on, do_hover_off).click(do_click).appendTo(swatches);
       }, this));
     return calendarPicker;
   };
-  window.EventCreator.prototype.changeCalendar = function changeCalendar(event, eventDOM, calNumber) {
+  window.EventCreator.prototype.changeCalendar = function changeCalendar(event, calNumber) {
     event.calNumber = calNumber;
-    return this.setColour(eventDOM, calNumber);
+    return this.setColour(event, calNumber);
   };
-  window.EventCreator.prototype.setColour = function setColour(eventDOM, calNumber) {
+  window.EventCreator.prototype.setColour = function setColour(event, calNumber) {
     var color;
     color = this.eventLoader.calendars[calNumber].getColor().getValue();
-    return $('.inner', eventDOM).css('background-color', this.colourMap[color]);
+    return $('.inner', event.eventDOM).css('background-color', this.colourMap[color]);
   };
 })();

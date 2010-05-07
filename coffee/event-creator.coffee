@@ -20,12 +20,14 @@ class window.EventCreator
 		eventDOM.addClass 'important' if event.summary.endsWith('!')
 		eventDOM.addClass 'new' if event.isNew
 
-		@setColour eventDOM, event.calNumber
-		@makeEditable event, eventDOM if event.editable
+		event.eventDOM: eventDOM
+
+		@setColour event, event.calNumber
+		@makeEditable event if event.editable
 
 		return eventDOM
 
-	makeEditable: (event, eventDOM) ->
+	makeEditable: (event) ->
 		dragging: {}
 		
 		do_start_drag: (ev, ui) =>
@@ -55,20 +57,25 @@ class window.EventCreator
 			$('#body').unbind('mousemove')
 
 			if (event.start - dragging.start != 0 || event.end - dragging.end != 0)
-				event.save ->
-					$.log 'Moved event'
-				, ->
-					$.log 'Failed to move event'
+				event.eventDOM.addClass 'updating'
+
+				event.save =>
+					$.log('Moved event', arguments)
+					event.eventDOM.removeClass 'updating'
+				, =>
+					$.log('Failed to move event :(', arguments)
+					event.eventDOM.removeClass 'updating'
+					event.eventDOM.addClass 'error'
 
 		
-		eventDOM.draggable {
+		event.eventDOM.draggable {
 			revert: true
 			distance: 10
 			helper: ->
 				$('<div>')
 			scroll: false
 			cursor: 'move'
-			handle: $('.text', eventDOM)
+			handle: $('.text', event.eventDOM)
 			start: do_start_drag
 			drag: do_drag
 			stop: do_drag_stop
@@ -113,17 +120,22 @@ class window.EventCreator
 		do_resize_stop: (e, ui) =>
 			$('#body').unbind('mousemove')
 
-			eventDOM.remove()
-			@eventLoader.updateEvent(event)
+			# event.eventDOM.remove()
+			# @eventLoader.updateEvent(event)
+			
+			event.eventDOM.addClass 'updating'
 
 			if event.start - resizing.start != 0 || event.end - resizing.end != 0
-				event.save ->
-					$.log 'Resized event'
-				, ->
-					$.log 'Failed to resize event'
+				event.save =>
+					$.log('Resized event', arguments)
+					event.eventDOM.removeClass 'updating'
+				, =>
+					$.log('Failed to resize event :(', arguments)
+					event.eventDOM.removeClass 'updating'
+					event.eventDOM.addClass 'error'
 		
 		if event.isStart || event.isEnd
-			eventDOM.resizable {
+			event.eventDOM.resizable {
 				handles: handles.join(', ')
 				ghost: true
 				start: do_resize_start
@@ -131,23 +143,23 @@ class window.EventCreator
 				stop: do_resize_stop
 			}
 	
-		eventDOM.click =>
-			@click event, eventDOM
+		event.eventDOM.click =>
+			@click event
 
 
-	click: (event, eventDOM) ->
-		return if eventDOM.hasClass('editing')
+	click: (event) ->
+		return if event.eventDOM.hasClass('editing')
 
 		editor: $('#templates .editor').clone()
 		delButton: $('#templates .delete').clone()
 		
-		calendarPicker: @getCalendarPicker(event, eventDOM)
+		calendarPicker: @getCalendarPicker(event)
 
-		startText: $('.text', eventDOM).text()
+		startText: $('.text', event.eventDOM).text()
 		startCalNumber: event.calNumber
 
 		$('textarea', editor).text( if event.isNew then 'New event...' else startText)
-		$('textarea', editor).height($('.text', eventDOM).height())
+		$('textarea', editor).height($('.text', event.eventDOM).height())
 		$('textarea', editor).keyup( ->
 			text: $('textarea', editor).val()
 			
@@ -156,39 +168,41 @@ class window.EventCreator
 			height: $("#layout-event .text").text(text).outerHeight()
 			
 			$('textarea', editor).height(height)
-			eventDOM.css('border', 'none')
+			event.eventDOM.css('border', 'none')
 		).keyup()
 		
-		parent: eventDOM.parent()
-		top: eventDOM.css('top')
+		parent: event.eventDOM.parent()
+		top: event.eventDOM.css('top')
 		
-		eventDOM.css { 
-			top: eventDOM.offset().top
-			left: eventDOM.offset().left
+		event.eventDOM.css { 
+			top: event.eventDOM.offset().top
+			left: event.eventDOM.offset().left
 		}
-		eventDOM.appendTo $('body')
+		event.eventDOM.appendTo $('body')
 					
-		$('.text', eventDOM).hide()
+		$('.text', event.eventDOM).hide()
 		
-		$('.inner', eventDOM).append editor
-		delButton.appendTo(eventDOM).hide().fadeIn()
-		calendarPicker.appendTo(eventDOM).hide().fadeIn()
+		$('.inner', event.eventDOM).append editor
+		delButton.appendTo(event.eventDOM).hide().fadeIn()
+		calendarPicker.appendTo(event.eventDOM).hide().fadeIn()
 		
 		$('textarea', editor).focus().select()
-		eventDOM.addClass('editing')
-		eventDOM.removeClass('error')
+		event.eventDOM.addClass 'editing'
+		event.eventDOM.removeClass 'error'
 		
 		deleteEvent: =>
 			event.isDeleting: true
 			removeEditor()
 			
+			event.eventDOM.addClass 'updating'
+			
 			event.remove =>
 				$.log 'Deleted event', arguments
-				eventDOM.remove()
+				event.eventDOM.remove()
 			, =>
 				$.log 'Failed to delete event', arguments
-				eventDOM.removeClass 'updating'
-				eventDOM.addClass 'error'
+				event.eventDOM.removeClass 'updating'
+				event.eventDOM.addClass 'error'
 				event.isDeleting: false
 						
 		removeEditor: (e) =>
@@ -198,33 +212,33 @@ class window.EventCreator
 					deleteEvent()
 					return
 				
-				eventDOM.appendTo(parent)
-				eventDOM.css('top', top)
+				event.eventDOM.appendTo(parent)
+				event.eventDOM.css('top', top)
 				
-				$('.text', eventDOM).text(text).show()
+				$('.text', event.eventDOM).text(text).show()
 				event.summary: text
 				editor.remove()
 				delButton.remove()
 				calendarPicker.remove()
-				eventDOM.removeClass('editing')
+				event.eventDOM.removeClass('editing')
 
 				@eventLoader.updateEvent(event)
 								
 				eventChanged: text != startText || event.calNumber != startCalNumber
 				if eventChanged && !event.isDeleting
-					eventDOM.addClass('updating')
+					event.eventDOM.addClass 'updating'
 
 					event.save  =>
 						$.log('Updated event', arguments)
-						eventDOM.removeClass('updating')
+						event.eventDOM.removeClass 'updating'
 					, =>
 						$.log('Failed update event :(', arguments)
-						eventDOM.removeClass('updating')
-						eventDOM.addClass('error')
+						event.eventDOM.removeClass 'updating'
+						event.eventDOM.addClass 'error'
 					, startCalNumber					
 
 				else if event.isDeleteing
-					eventDOM.addClass('updating')
+					event.eventDOM.addClass 'updating'
 			
 				$('body').unbind('click', removeEditor)
 				$("#body").unbind('mousewheel', removeEditor)
@@ -250,7 +264,7 @@ class window.EventCreator
 			$("#body").mousewheel(removeEditor)
 		, 0
 
-	getCalendarPicker: (event, eventDOM) ->
+	getCalendarPicker: (event) ->
 		# Build calendar picker
 		calendarPicker: $('#templates .calendar-picker').clone()
 		swatches: $('.calendar-swatches', calendarPicker)
@@ -268,7 +282,7 @@ class window.EventCreator
 				name.text('')
 
 			do_click: =>
-				@changeCalendar(event, eventDOM, i)
+				@changeCalendar(event, i)
 
 			$('#templates .calendar-swatch')
 				.clone()
@@ -280,12 +294,12 @@ class window.EventCreator
 
 		return calendarPicker
 
-	changeCalendar: (event, eventDOM, calNumber) ->
+	changeCalendar: (event, calNumber) ->
 		event.calNumber: calNumber
-		@setColour eventDOM, calNumber
+		@setColour event, calNumber
 
-	setColour: (eventDOM, calNumber) ->
+	setColour: (event, calNumber) ->
 		color: @eventLoader.calendars[calNumber].getColor().getValue()
-		$('.inner', eventDOM).css('background-color', @colourMap[color])
+		$('.inner', event.eventDOM).css('background-color', @colourMap[color])
 
 

@@ -265,8 +265,10 @@ body {
 	background-position: center right;
 }
 
-.event.error {
-	background: red;
+.event.error .text {
+	background-image: url(../images/warning-icon.png);
+	background-repeat: no-repeat;
+	background-position: center right;
 }
 
 .editor {
