@@ -28,6 +28,11 @@ class window.EventCreator
 		return eventDOM
 
 	makeEditable: (event) ->
+		@makeDraggable event
+		@makeResizable event
+		event.eventDOM.click => @click event
+	
+	makeDraggable: (event) ->
 		dragging: {}
 		
 		do_start_drag: (ev, ui) =>
@@ -71,8 +76,7 @@ class window.EventCreator
 		event.eventDOM.draggable {
 			revert: true
 			distance: 10
-			helper: ->
-				$('<div>')
+			helper: -> $('<div>')
 			scroll: false
 			cursor: 'move'
 			handle: $('.text', event.eventDOM)
@@ -81,11 +85,12 @@ class window.EventCreator
 			stop: do_drag_stop
 		}
 
+	makeResizable: (event) ->
 		resizing: {}
 		handles: []
 		handles.push 'w' if event.isStart
 		handles.push 'e' if event.isEnd
-		
+
 		do_resize_start: (e, ui) =>
 			resizing.direction: if (e.pageX < (ui.originalPosition.left + (ui.originalSize.width / 2))) then 'start' else 'end'
 			resizing.x: e.pageX
@@ -97,7 +102,7 @@ class window.EventCreator
 			resizing.day: null
 			$('#body').mousemove (e) =>
 				resizing.day: $(e.target).parents('.day').add(e.target)
-		
+
 		do_resize: (e, ui) =>
 			if resizing.day
 				id: resizing.day.attr('id')
@@ -116,13 +121,13 @@ class window.EventCreator
 
 				if event.start - oldStart != 0 || event.end - oldEnd != 0
 					@eventLoader.updateEvent(event, oldStart, oldEnd)							
-		
+
 		do_resize_stop: (e, ui) =>
 			$('#body').unbind('mousemove')
 
 			# event.eventDOM.remove()
 			# @eventLoader.updateEvent(event)
-			
+
 			event.eventDOM.addClass 'updating'
 
 			if event.start - resizing.start != 0 || event.end - resizing.end != 0
@@ -133,7 +138,7 @@ class window.EventCreator
 					$.log('Failed to resize event :(', arguments)
 					event.eventDOM.removeClass 'updating'
 					event.eventDOM.addClass 'error'
-		
+
 		if event.isStart || event.isEnd
 			event.eventDOM.resizable {
 				handles: handles.join(', ')
@@ -142,10 +147,6 @@ class window.EventCreator
 				resize: do_resize
 				stop: do_resize_stop
 			}
-	
-		event.eventDOM.click =>
-			@click event
-
 
 	click: (event) ->
 		return if event.eventDOM.hasClass('editing')

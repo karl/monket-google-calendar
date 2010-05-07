@@ -43,7 +43,14 @@
     return eventDOM;
   };
   window.EventCreator.prototype.makeEditable = function makeEditable(event) {
-    var do_drag, do_drag_stop, do_resize, do_resize_start, do_resize_stop, do_start_drag, dragging, handles, resizing;
+    this.makeDraggable(event);
+    this.makeResizable(event);
+    return event.eventDOM.click(__bind(function() {
+        return this.click(event);
+      }, this));
+  };
+  window.EventCreator.prototype.makeDraggable = function makeDraggable(event) {
+    var do_drag, do_drag_stop, do_start_drag, dragging;
     dragging = {};
     do_start_drag = __bind(function(ev, ui) {
         dragging.start = event.start;
@@ -81,7 +88,7 @@
             }, this));
         }
       }, this);
-    event.eventDOM.draggable({
+    return event.eventDOM.draggable({
       revert: true,
       distance: 10,
       helper: function helper() {
@@ -94,6 +101,9 @@
       drag: do_drag,
       stop: do_drag_stop
     });
+  };
+  window.EventCreator.prototype.makeResizable = function makeResizable(event) {
+    var do_resize, do_resize_start, do_resize_stop, handles, resizing;
     resizing = {};
     handles = [];
     if (event.isStart) {
@@ -147,16 +157,15 @@
             }, this));
         }
       }, this);
-    event.isStart || event.isEnd ? event.eventDOM.resizable({
-      handles: handles.join(', '),
-      ghost: true,
-      start: do_resize_start,
-      resize: do_resize,
-      stop: do_resize_stop
-    }) : null;
-    return event.eventDOM.click(__bind(function() {
-        return this.click(event);
-      }, this));
+    if (event.isStart || event.isEnd) {
+      return event.eventDOM.resizable({
+        handles: handles.join(', '),
+        ghost: true,
+        start: do_resize_start,
+        resize: do_resize,
+        stop: do_resize_stop
+      });
+    }
   };
   window.EventCreator.prototype.click = function click(event) {
     var calendarPicker, delButton, deleteEvent, editor, parent, removeEditor, startCalNumber, startText, top;

@@ -1,7 +1,7 @@
 Next:
+* Clicking on a second event while editing leaves first one editing
 
 Bugs
-* Clicking on a second event while editing leaves first one editing
 * Can't move back to a calendar that event was deleted from
 * Recalculate event positions on resize
 * Fix dragging over the year boundary
