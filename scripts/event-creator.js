@@ -206,12 +206,14 @@
         event.isDeleting = true;
         removeEditor();
         event.eventDOM.addClass('updating');
+        event.eventDOM.addClass('deleting');
         return event.remove(__bind(function() {
             $.log('Deleted event', arguments);
             return event.eventDOM.remove();
           }, this), __bind(function() {
             $.log('Failed to delete event', arguments);
             event.eventDOM.removeClass('updating');
+            event.eventDOM.removeClass('deleting');
             event.eventDOM.addClass('error');
             event.isDeleting = false;
             return event.isDeleting;

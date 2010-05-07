@@ -196,6 +196,7 @@ class window.EventCreator
 			removeEditor()
 			
 			event.eventDOM.addClass 'updating'
+			event.eventDOM.addClass 'deleting'
 			
 			event.remove =>
 				$.log 'Deleted event', arguments
@@ -203,6 +204,7 @@ class window.EventCreator
 			, =>
 				$.log 'Failed to delete event', arguments
 				event.eventDOM.removeClass 'updating'
+				event.eventDOM.removeClass 'deleting'
 				event.eventDOM.addClass 'error'
 				event.isDeleting: false
 						

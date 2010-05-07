@@ -238,6 +238,11 @@ body {
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
 }
 
+.event.deleting {
+	opacity: 0.2;	
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";
+}
+
 .event.important .inner {
 	-moz-box-shadow: 0 0 5px #DAA520;
 	-webkit-box-shadow: 0 0 5px #DAA520;
