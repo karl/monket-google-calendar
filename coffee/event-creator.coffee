@@ -206,42 +206,43 @@ class window.EventCreator
 				event.isDeleting: false
 						
 		removeEditor: (e) =>
-			if !e || $(e.target).parents('.editing').length == 0
-				text: $.trim($('textarea', editor).val())
-				if text == '' && !event.isDeleting
-					deleteEvent()
-					return
-				
-				event.eventDOM.appendTo(parent)
-				event.eventDOM.css('top', top)
-				
-				$('.text', event.eventDOM).text(text).show()
-				event.summary: text
-				editor.remove()
-				delButton.remove()
-				calendarPicker.remove()
-				event.eventDOM.removeClass('editing')
-
-				@eventLoader.updateEvent(event)
-								
-				eventChanged: text != startText || event.calNumber != startCalNumber
-				if eventChanged && !event.isDeleting
-					event.eventDOM.addClass 'updating'
-
-					event.save  =>
-						$.log('Updated event', arguments)
-						event.eventDOM.removeClass 'updating'
-					, =>
-						$.log('Failed update event :(', arguments)
-						event.eventDOM.removeClass 'updating'
-						event.eventDOM.addClass 'error'
-					, startCalNumber					
-
-				else if event.isDeleteing
-					event.eventDOM.addClass 'updating'
+			return unless !e or $(e.target).parents('.editing').length == 0
 			
-				$('body').unbind('click', removeEditor)
-				$("#body").unbind('mousewheel', removeEditor)
+			text: $.trim $('textarea', editor).val()
+			if text == '' and !event.isDeleting
+				deleteEvent()
+				return
+			
+			event.eventDOM.appendTo(parent)
+			event.eventDOM.css('top', top)
+			
+			$('.text', event.eventDOM).text(text).show()
+			event.summary: text
+			editor.remove()
+			delButton.remove()
+			calendarPicker.remove()
+			event.eventDOM.removeClass('editing')
+
+			@eventLoader.updateEvent(event)
+							
+			eventChanged: text != startText || event.calNumber != startCalNumber
+			if eventChanged && !event.isDeleting
+				event.eventDOM.addClass 'updating'
+
+				event.save  =>
+					$.log('Updated event', arguments)
+					event.eventDOM.removeClass 'updating'
+				, =>
+					$.log('Failed update event :(', arguments)
+					event.eventDOM.removeClass 'updating'
+					event.eventDOM.addClass 'error'
+				, startCalNumber					
+
+			else if event.isDeleteing
+				event.eventDOM.addClass 'updating'
+		
+			$('body').unbind('click', removeEditor)
+			$("#body").unbind('mousewheel', removeEditor)
 
 		$('textarea', editor).keyup (e) ->
 			if e.keyCode == 13

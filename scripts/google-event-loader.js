@@ -209,7 +209,7 @@
       // And then add on any extra hours in the last day
       // Done like this to avoid issues when summer time changes
       length = Math.round((endDate - entryStartDate) / (1000 * 60 * 60 * 24));
-      (endTime - endDate) > 0 ? length++ : null;
+      (endTime - endDate) > 0 ? length += 1 : null;
       entryEndDate = entryStartDate.addDays(length);
     }
     summary = $.trim(entry.getTitle().getText());
@@ -339,6 +339,7 @@
         return null;
       }
     }
+    return null;
   };
   window.GoogleEventLoader.prototype.eventsAreEqual = function eventsAreEqual(a, b) {
     return a.summary === b.summary && a.start === b.start && a.end === b.end;

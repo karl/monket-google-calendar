@@ -193,7 +193,7 @@ class window.GoogleEventLoader
 			# Done like this to avoid issues when summer time changes
 			length: Math.round((endDate - entryStartDate) / (1000 * 60 * 60 * 24))
 			if (endTime - endDate) > 0
-				length++
+				length: + 1
 
 			entryEndDate: entryStartDate.addDays length
 
@@ -324,6 +324,8 @@ class window.GoogleEventLoader
 				Array.remove cacheEntries, i
 				@removeEventHook event
 				return
+				
+		null
 	
 	eventsAreEqual: (a, b) ->
 		return a.summary == b.summary and

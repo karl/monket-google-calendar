@@ -210,36 +210,37 @@
       }, this);
     removeEditor = __bind(function(e) {
         var eventChanged, text;
-        if (!e || $(e.target).parents('.editing').length === 0) {
-          text = $.trim($('textarea', editor).val());
-          if (text === '' && !event.isDeleting) {
-            deleteEvent();
-            return null;
-          }
-          event.eventDOM.appendTo(parent);
-          event.eventDOM.css('top', top);
-          $('.text', event.eventDOM).text(text).show();
-          event.summary = text;
-          editor.remove();
-          delButton.remove();
-          calendarPicker.remove();
-          event.eventDOM.removeClass('editing');
-          this.eventLoader.updateEvent(event);
-          eventChanged = text !== startText || event.calNumber !== startCalNumber;
-          if (eventChanged && !event.isDeleting) {
-            event.eventDOM.addClass('updating');
-            event.save(__bind(function() {
-                $.log('Updated event', arguments);
-                return event.eventDOM.removeClass('updating');
-              }, this), __bind(function() {
-                return $.log('Failed update event :(', arguments, event.eventDOM.removeClass('updating'), event.eventDOM.addClass('error'));
-              }, this), startCalNumber);
-          } else if (event.isDeleteing) {
-            event.eventDOM.addClass('updating');
-          }
-          $('body').unbind('click', removeEditor);
-          $("#body").unbind('mousewheel', removeEditor);
+        if (!(!e || $(e.target).parents('.editing').length === 0)) {
+          return null;
         }
+        text = $.trim($('textarea', editor).val());
+        if (text === '' && !event.isDeleting) {
+          deleteEvent();
+          return null;
+        }
+        event.eventDOM.appendTo(parent);
+        event.eventDOM.css('top', top);
+        $('.text', event.eventDOM).text(text).show();
+        event.summary = text;
+        editor.remove();
+        delButton.remove();
+        calendarPicker.remove();
+        event.eventDOM.removeClass('editing');
+        this.eventLoader.updateEvent(event);
+        eventChanged = text !== startText || event.calNumber !== startCalNumber;
+        if (eventChanged && !event.isDeleting) {
+          event.eventDOM.addClass('updating');
+          event.save(__bind(function() {
+              $.log('Updated event', arguments);
+              return event.eventDOM.removeClass('updating');
+            }, this), __bind(function() {
+              return $.log('Failed update event :(', arguments, event.eventDOM.removeClass('updating'), event.eventDOM.addClass('error'));
+            }, this), startCalNumber);
+        } else if (event.isDeleteing) {
+          event.eventDOM.addClass('updating');
+        }
+        $('body').unbind('click', removeEditor);
+        return $("#body").unbind('mousewheel', removeEditor);
       }, this);
     $('textarea', editor).keyup(function(e) {
       if (e.keyCode === 13) {
