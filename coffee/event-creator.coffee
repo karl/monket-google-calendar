@@ -209,7 +209,8 @@ class window.EventCreator
 				event.isDeleting: false
 						
 		removeEditor: (e) =>
-			return unless !e or $(e.target).parents('.editing').length == 0
+			# Don't remove this editor if the user has clicked within it
+			return if event == $(e?.target).parents('.event').data 'event'
 			
 			text: $.trim $('textarea', editor).val()
 			if text == '' and !event.isDeleting
@@ -264,8 +265,8 @@ class window.EventCreator
 				deleteEvent()
 				e.stopPropagation()
 
-			$('body').click(removeEditor)
-			$("#body").mousewheel(removeEditor)
+			$('body').click removeEditor
+			$('#body').mousewheel removeEditor
 		, 0
 
 	getCalendarPicker: (event) ->

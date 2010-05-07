@@ -221,7 +221,8 @@
       }, this);
     removeEditor = __bind(function(e) {
         var eventChanged, text;
-        if (!(!e || $(e.target).parents('.editing').length === 0)) {
+        // Don't remove this editor if the user has clicked within it
+        if (event === ($(e == undefined ? undefined : e.target).parents('.event').data('event'))) {
           return null;
         }
         text = $.trim($('textarea', editor).val());
@@ -274,7 +275,7 @@
         return e.stopPropagation();
       });
       $('body').click(removeEditor);
-      return $("#body").mousewheel(removeEditor);
+      return $('#body').mousewheel(removeEditor);
     }, 0);
   };
   window.EventCreator.prototype.getCalendarPicker = function getCalendarPicker(event) {
