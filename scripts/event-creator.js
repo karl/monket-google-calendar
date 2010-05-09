@@ -145,8 +145,8 @@
       }, this);
     do_resize_stop = __bind(function(e, ui) {
         $('#body').unbind('mousemove');
-        // event.eventDOM.remove()
-        // @eventLoader.updateEvent(event)
+        event.eventDOM.remove();
+        this.eventLoader.updateEvent(event);
         event.eventDOM.addClass('updating');
         if (event.start - resizing.start !== 0 || event.end - resizing.end !== 0) {
           return event.save(__bind(function() {

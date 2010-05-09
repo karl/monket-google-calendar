@@ -125,8 +125,8 @@ class window.EventCreator
 		do_resize_stop: (e, ui) =>
 			$('#body').unbind('mousemove')
 
-			# event.eventDOM.remove()
-			# @eventLoader.updateEvent(event)
+			event.eventDOM.remove()
+			@eventLoader.updateEvent(event)
 
 			event.eventDOM.addClass 'updating'
 
